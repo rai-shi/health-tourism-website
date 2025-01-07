@@ -3,3 +3,6 @@ djangorestframework
 # environs
 django-environ
 psycopg2-binary
+djangorestframework-simplejwt
+dj-rest-auth
+django-allauth
