@@ -3,6 +3,11 @@ from . import views
 
 urlpatterns = [
     
-    path("me", views.GetUserByID, name="me"),
+    path("me", 
+         views.GetPatientUserByID, 
+         name="me"),
+    path("medical-center-request", 
+         views.RequestToMedicalCenter, 
+         name="medical-center-request")
     
 ]   

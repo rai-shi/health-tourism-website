@@ -1,8 +1,12 @@
 from django.shortcuts import render
 
 
-
-def GetUserByID(request):
+# GET
+def GetPatientUserByID(request):
     pass 
+
+# POST
+def RequestToMedicalCenter(request):
+    pass
 
 
