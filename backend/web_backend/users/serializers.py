@@ -1,4 +1,5 @@
 from rest_framework import serializers
+from django.contrib.auth.password_validation import validate_password
 from .models import User
 
 class UserSerializers(serializers.ModelSerializer):
@@ -10,14 +11,26 @@ class UserSerializers(serializers.ModelSerializer):
             "password": {"write_only": True}
         }
 
-    # hashing the password with sha256
-    # password validation
+    def validate_password(self, value):
+            try:
+                validate_password(value)  # Django password validators (minimum length, complexity, etc.)
+            except Exception as e:
+                raise serializers.ValidationError(str(e))
+            return value
+    
     def create(self, validate_data):
         password = validate_data.pop("password", None)
         instance = self.Meta.model(**validate_data)
         if password is not None:
+            # hashing the password with sha256
             instance.set_password(password)
         instance.save()
         return instance 
+    
+    def update(self, instance, validated_data):
+        password = validated_data.pop("password", None)
+        if password is not None:
+            instance.set_password(password)
+        return super().update(instance, validated_data)
     
 
