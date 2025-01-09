@@ -59,6 +59,9 @@ INSTALLED_APPS = [
     'dj_rest_auth.registration',
     'corsheaders',
 
+    'rest_framework_swagger',
+    'drf_yasg', 
+
     'cities_light',
     'phonenumber_field',
 ]

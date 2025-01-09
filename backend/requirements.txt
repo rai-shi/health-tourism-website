@@ -9,3 +9,5 @@ django-allauth
 django-cors-headers
 django-cities-light
 "django-phonenumber-field[phonenumbers]"
+django-rest-swagger
+drf-yasg

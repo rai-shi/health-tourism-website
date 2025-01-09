@@ -32,5 +32,5 @@ update-personal-info
     "birthday": "2000-2-7",
     "phone_number": "+905323936604",
     "country": "TR",
-    "city": "Samsun",
+    "city": "Samsun"
 }
