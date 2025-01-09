@@ -19,6 +19,44 @@ env = environ.Env()
 environ.Env.read_env(os.path.join(settings.BASE_DIR, '.env'))
 
 
+def generateToken(user):
+    # access token generation
+    payload = {
+        "id": user.id,
+        "exp": datetime.datetime.now() + datetime.timedelta(minutes=60),
+        "iat": datetime.datetime.now()
+    }
+    # os.environ.get('JWT_SECRET')
+    token = jwt.encode(payload, env("JWT_SECRET"), algorithm="HS256")
+    return token
+
+def getUserByEmail(email):
+    user = User.objects.filter(email=email).first()
+    if user is None:
+        raise AuthenticationFailed("User not found!")
+    return user
+
+def checkPassword(user, password):
+    if not user.check_password(password):
+        raise AuthenticationFailed("Incorrect password!")
+
+def isTokenValid(token):
+    if not token:
+        raise AuthenticationFailed("Unauthenticated!")
+    try:
+        payload = jwt.decode(token, env("JWT_SECRET"), algorithms=["HS256"])
+    except jwt.ExpiredSignatureError:
+        raise AuthenticationFailed("Unauthenticated!")
+    return payload
+
+def getUserByID(payload):
+    user = User.objects.filter(id=payload["id"]).first()
+    if not user:
+        raise AuthenticationFailed("User not found!")
+    return user
+
+
+
 class RegisterView(APIView):
     def post(self, request):
         # get the data serialized as a json with UserSerializer using with User model.
@@ -32,29 +70,18 @@ class RegisterView(APIView):
                     serializer.data,
                     status=status.HTTP_201_CREATED)
     
-
 class LoginView(APIView):
     def post(self, request):
         email = request.data["email"]
         password = request.data["password"]
 
         # find user by email
-        user = User.objects.filter(email=email).first()
-        if user is None:
-            raise AuthenticationFailed("User not found!")
+        user = getUserByEmail(email=email)
         # verify password
-        if not user.check_password(password):
-            raise AuthenticationFailed("Incorrect password!")
+        checkPassword(user=user, password=password)
         
         # JWT configuration
-        # access token generation
-        payload = {
-            "id": user.id,
-            "exp": datetime.datetime.now() + datetime.timedelta(minutes=60),
-            "iat": datetime.datetime.now()
-        }
-        # os.environ.get('JWT_SECRET')
-        token = jwt.encode(payload, env("JWT_SECRET"), algorithm="HS256")
+        token = generateToken(user= user)
         response = Response()
         # cookie set backend only
         response.set_cookie(key="jwt", value=token, httponly=True)
@@ -67,18 +94,11 @@ class LoginView(APIView):
 class UserView(APIView):
     def get(self, request):
         token = request.COOKIES.get("jwt")
+        payload = isTokenValid(token=token)
+        user = getUserByID(payload)
 
-        if not token:
-            raise AuthenticationFailed("Unauthenticated!")
-        
-        try:
-            payload = jwt.decode(token, env("JWT_SECRET"), algorithms=["HS256"])
-        except jwt.ExpiredSignatureError:
-            raise AuthenticationFailed("Unauthenticated!")
-
-        user = User.objects.filter(id=payload["id"]).first()
+        # make the response data json valid
         serializer = UserSerializers(user)
-
         return Response(serializer.data)
 
 class LogoutView(APIView):
@@ -93,20 +113,11 @@ class LogoutView(APIView):
 # ! email gönderimi ekle
 class ChangePasswordView(APIView):
     def post(self, request):
+
         token = request.COOKIES.get("jwt")
-        
-        if not token:
-            raise AuthenticationFailed("Unauthenticated!")
-
-        try:
-            payload = jwt.decode(token, env("JWT_SECRET"), algorithms=["HS256"])
-        except jwt.ExpiredSignatureError:
-            raise AuthenticationFailed("Unauthenticated!")
-
+        payload = isTokenValid(token=token)
         # Get the current user
-        user = User.objects.filter(id=payload["id"]).first()
-        if not user:
-            raise AuthenticationFailed("User not found!")
+        user = getUserByID(payload=payload)
 
         # Get the old and new passwords from the request data
         old_password = request.data.get("old_password")
@@ -137,6 +148,7 @@ class ChangePasswordView(APIView):
             )
             response.delete_cookie("jwt")  # Logout
             return response
+        # validation error
         else:
             return Response(
                 serializer.errors,
@@ -149,27 +161,18 @@ class ChangeEmailView(APIView):
     def post(self, request):
         token = request.COOKIES.get("jwt")
         
-        if not token:
-            raise AuthenticationFailed("Unauthenticated!")
-
-        try:
-            payload = jwt.decode(token, env("JWT_SECRET"), algorithms=["HS256"])
-        except jwt.ExpiredSignatureError:
-            raise AuthenticationFailed("Unauthenticated!")
+        payload = isTokenValid(token=token)
 
         # Get the current user
-        user = User.objects.filter(id=payload["id"]).first()
-
-        if not user:
-            raise AuthenticationFailed("User not found!")
+        user =getUserByID(payload=payload)
 
         # Get the old password and new email from the request data
-        old_password = request.data.get("old_password")
+        password = request.data.get("password")
         new_email = request.data.get("new_email")
 
         # Check if the old password matches
-        if not user.check_password(old_password):
-            raise AuthenticationFailed("Old password is incorrect!")
+        if not user.check_password(password):
+            raise AuthenticationFailed("Password is incorrect!")
 
         # Validate new email format
         try:
@@ -186,13 +189,7 @@ class ChangeEmailView(APIView):
         user.email = new_email
         user.save()
 
-        # Generate new JWT token since email is changed
-        payload = {
-            "id": user.id,
-            "exp": datetime.datetime.now() + datetime.timedelta(minutes=60),
-            "iat": datetime.datetime.now()
-        }
-        new_token = jwt.encode(payload, env("JWT_SECRET"), algorithm="HS256")
+        new_token = generateToken(user=user)
 
         # Send a response with the new JWT token and a success message
         response = Response(
@@ -204,10 +201,11 @@ class ChangeEmailView(APIView):
             status=status.HTTP_200_OK
         )
 
-        # Optional: Delete the old JWT token (we've already generated a new one)
+        # Delete the old JWT token (we've already generated a new one)
         response.delete_cookie("jwt")
 
-        # Set the new token in a secure, httpOnly cookie
+        # Set the new token in a secure, httpOnly cookie, 
+        # set the new token only for backend
         response.set_cookie(key="jwt", value=new_token, httponly=True)
 
         return response
@@ -228,5 +226,6 @@ class ChangeEmailView(APIView):
 
 # {
 # "old_password" : "930615Fly",
-# "new_password" : "591003Black"
+# "new_password1" : "591003Black",
+# "new_password2" : "591003Black"
 # }

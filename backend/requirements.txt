@@ -6,5 +6,5 @@ psycopg2-binary
 djangorestframework-simplejwt
 dj-rest-auth
 django-allauth
-django-countries
 django-cors-headers
+django-cities-light
