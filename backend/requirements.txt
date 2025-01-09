@@ -8,3 +8,4 @@ dj-rest-auth
 django-allauth
 django-cors-headers
 django-cities-light
+"django-phonenumber-field[phonenumbers]"

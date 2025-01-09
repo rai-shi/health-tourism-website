@@ -14,6 +14,7 @@ import jwt, datetime, json, environ, os
 
 from .serializers import UserSerializers
 from .models import User
+from patient.models import Patient
 
 env = environ.Env()
 environ.Env.read_env(os.path.join(settings.BASE_DIR, '.env'))
@@ -64,11 +65,28 @@ class RegisterView(APIView):
         # if data is valid
         serializer.is_valid(raise_exception=True)
         # then save the data to db or raise exception
-        serializer.save()
+        user = serializer.save()
+
+        user_type = request.data.get("user_type", None)  # "patient" or "hospital"
+        
+        # create with default value
+        if user_type == "patient":
+            try:
+                Patient.objects.create(user=user)
+            except:
+                # ! oluşturulan user'ı silmek gerekir
+                return Response(message={"Patient couldn't created"}, status=status.HTTP_400_BAD_REQUEST)
+        elif user_type == "hospital":
+            pass
+            # Hospital.objects.create(user=user)
+        else:
+            raise ValidationError({"user_type": "You must specify a valid user type ('patient' or 'hospital')."})
+
         # return saved register data
         return Response(
                     serializer.data,
                     status=status.HTTP_201_CREATED)
+
     
 class LoginView(APIView):
     def post(self, request):
@@ -90,7 +108,7 @@ class LoginView(APIView):
         }
         return response
 
-# /me
+# /me -> gerek yok patient/me hospital/me den ulaşılacak
 class UserView(APIView):
     def get(self, request):
         token = request.COOKIES.get("jwt")
@@ -157,7 +175,7 @@ class ChangePasswordView(APIView):
 
 # ! send validation email
 
-class ChangeEmailView(APIView):
+class UpdateEmailView(APIView):
     def post(self, request):
         token = request.COOKIES.get("jwt")
         
@@ -210,22 +228,3 @@ class ChangeEmailView(APIView):
 
         return response
 
-
-# ! JWT Token kısmını fonksiyonlaştır
-# {
-#     "first_name": "ayse",
-#     "last_name": "tak",
-#     "email": "ayse4@gmail.com",
-#     "password": "930615Fly"
-# }
-
-# {
-#  "email": "ayse@gmail.com",
-# "password": "930615Fly"
-# }
-
-# {
-# "old_password" : "930615Fly",
-# "new_password1" : "591003Black",
-# "new_password2" : "591003Black"
-# }

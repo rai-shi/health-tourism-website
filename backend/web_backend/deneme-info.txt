@@ -1,0 +1,27 @@
+register
+{
+    "first_name": "ayse",
+    "last_name": "tak",
+    "email": "ayse1@gmail.com",
+    "password": "930615Fly",
+    "user_type": "patient"
+}
+
+login
+{
+ "email": "ayse1@gmail.com",
+"password": "930615Fly"
+}
+
+change-password
+{
+"old_password" : "930615Fly",
+"new_password1" : "591003Black",
+"new_password2" : "591003Black"
+}
+
+update-email
+{
+"password" : "930615Fly",
+"new_email" : "biri@example.com"
+}

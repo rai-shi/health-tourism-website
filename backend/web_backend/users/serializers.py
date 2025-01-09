@@ -13,11 +13,13 @@ class UserSerializers(serializers.ModelSerializer):
 
     def validate_password(self, value):
             try:
-                validate_password(value)  # Django password validators (minimum length, complexity, etc.)
+                # Django password validators (minimum length, complexity, etc.)
+                validate_password(value)  
             except Exception as e:
                 raise serializers.ValidationError(str(e))
             return value
     
+    # create new hashed instance of password 
     def create(self, validate_data):
         password = validate_data.pop("password", None)
         instance = self.Meta.model(**validate_data)
@@ -27,6 +29,7 @@ class UserSerializers(serializers.ModelSerializer):
         instance.save()
         return instance 
     
+    # updating password with hashing
     def update(self, instance, validated_data):
         password = validated_data.pop("password", None)
         if password is not None:
