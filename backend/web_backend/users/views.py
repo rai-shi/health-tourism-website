@@ -75,7 +75,10 @@ class RegisterView(APIView):
                 Patient.objects.create(user=user)
             except:
                 # ! oluşturulan user'ı silmek gerekir
-                return Response(message={"Patient couldn't created"}, status=status.HTTP_400_BAD_REQUEST)
+                return Response( 
+                    {"message": "Patient couldn't created"}, 
+                    status=status.HTTP_400_BAD_REQUEST)
+            
         elif user_type == "hospital":
             pass
             # Hospital.objects.create(user=user)

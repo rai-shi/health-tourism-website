@@ -10,6 +10,7 @@ from rest_framework_simplejwt.tokens import RefreshToken
 from users.serializers import UserSerializers
 from .serializers import PatientSerializers
 from .models import Patient
+from cities_light.models import City, Country
 
 def getPatientByID(payload):
     user = getUserByID(payload=payload)
@@ -17,15 +18,15 @@ def getPatientByID(payload):
     if not patient:
         raise AuthenticationFailed("Patient not found!")
     
-    user_serializer = UserSerializers(user)
-    patient_serializer = PatientSerializers(patient)
-
-    response = {
-        "user": user_serializer.data,
-        "patient":patient_serializer.data   
-    }
-    return response
+    return (user, patient)
     
+def getCityName(id):
+    city = City.objects.filter(id=id).first()
+    return city.name
+
+def getCountryName(id):
+    country = Country.objects.filter(id=id).first()
+    return country.name
 
 # GET
 class PatientView(APIView):
@@ -33,16 +34,53 @@ class PatientView(APIView):
         token = request.COOKIES.get("jwt")
         payload = isTokenValid(token=token)
         
-        response = getPatientByID(payload=payload)
+        user, patient = getPatientByID(payload=payload)
 
+        # make the data json valid
+        user_serializer = UserSerializers(user)
+        patient_serializer = PatientSerializers(patient)
+
+        response = {
+            "user": user_serializer.data,
+            "patient":patient_serializer.data   
+        }
         return Response(response)
-
-
+    
 # POST
 class UpdatePersonalInfoView(APIView):
     def post(self, request):
-        pass
 
+        token       = request.COOKIES.get("jwt")
+        payload     = isTokenValid(token=token)
+
+        user, patient = getPatientByID(payload=payload)
+
+        # get the personal data
+        gender          = request.data.get("gender")
+        birthday        = request.data.get("birthday")
+        phone_number    = request.data.get("phone_number")
+        country         = request.data.get("country")
+        city            = request.data.get("city")
+
+        city_object = City.objects.filter(name=city).first()
+        # country kodu geldiğini varsayıyorum, Turkey : TR
+        country_object = Country.objects.filter(code2=country).first()
+
+        patient.gender          = gender
+        patient.birthday        = birthday
+        patient.phone_number    = phone_number
+        patient.country         = country_object
+        patient.city            = city_object
+
+        patient.save()
+
+        response = Response(
+            {
+                "message": "Personal information is successfully updated.",
+            },
+            status=status.HTTP_200_OK
+        )
+        return response
 
 
 # POST

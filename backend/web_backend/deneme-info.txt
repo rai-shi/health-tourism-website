@@ -25,3 +25,12 @@ update-email
 "password" : "930615Fly",
 "new_email" : "biri@example.com"
 }
+
+update-personal-info 
+{
+    "gender": "w",
+    "birthday": "2000-2-7",
+    "phone_number": "+905323936604",
+    "country": "TR",
+    "city": "Samsun",
+}

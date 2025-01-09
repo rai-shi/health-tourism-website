@@ -2,6 +2,10 @@ from rest_framework import serializers
 from .models import Patient
 
 class PatientSerializers(serializers.ModelSerializer):
+    # return field with their __str__ return 
+    country = serializers.StringRelatedField()  
+    city = serializers.StringRelatedField()  
+
     class Meta: 
         model = Patient
         fields = [
