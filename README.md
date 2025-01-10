@@ -12,18 +12,32 @@ backend set up
 * Python 3.10.16
 * PostgreSQL
 
-Don't forget to run migrations when starting up the server for the first time.
+Before starting up the server,
+
+* Install required packages
 ```
 >> /health-tourism-website/backend$
 pip install -r requirements.txt
+```
 
+* Run migrations 
+```
 >> /health-tourism-website/backend/web_backend$
 django manage.py makemigrations
 django manage.py migrate
+```
+
+* Then some automatic database uploading must be done
+```
+>> /health-tourism-website/backend/web_backend$
 django manage.py cities-light 
 python manage.py import_specialities
 python manage.py import_procedure
 python manage.py import_health_institutions
+```
 
+* Finally you can run the server
+```
+>> /health-tourism-website/backend/web_backend$
 django manage.py runserver
 ```
