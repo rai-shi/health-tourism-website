@@ -55,27 +55,28 @@ class MedicalCenter(models.Model):
         ("AYD", "AYDIN"),
         ("ERZ", "ERZURUM"),
     ]
-    center_name     = models.CharField( max_length=200 )
-    center_type     = models.CharField(max_length=15, choices=CENTER_CHOICES, default="Hosp")
-    city            = models.CharField(max_length=3, choices=CITY_CHOICES, default="IST")
-    full_address    = models.TextField()
-    contact_number  = PhoneNumberField()
-    mail_address    = models.EmailField( max_length=100 )
+    # one to one relation with base User model
+    user            = models.OneToOneField(User, on_delete=models.CASCADE, related_name="medical_center")
+    center_name     = models.CharField( max_length=200, null=True )
+    center_type     = models.CharField(max_length=15, choices=CENTER_CHOICES, default="Hosp", null=True )
+    city            = models.CharField(max_length=3, choices=CITY_CHOICES, default="IST", null=True  )
+    contact_number  = PhoneNumberField( null=True )
+    mail_address    = models.EmailField( max_length=100, null=True )
+    web_site        = models.URLField( null=True )
     # markdown
-    preview_text    = MarkdownxField()
+    preview_text    = MarkdownxField( null=True )
     # markdown
     # bu metin içinde kullanılan teknolojiler, akreditasyon belgeleri, sağlık turizmi belgeleri tanımlanması sağlansın
-    overview_text   = MarkdownxField()
-    specialities    = models.ManyToManyField(Speciality, related_name="medical_centers_specialities")
-    Procedure       = models.ManyToManyField(Procedure, related_name="medical_centers_procedure")
-    web_site        = models.URLField()
+    overview_text   = MarkdownxField( null=True )
 
-    contracted_health_institutions = models.ManyToManyField(HealthInstitutions, related_name="medical_centers_health_inst")
+    specialities                    = models.ManyToManyField(Speciality, related_name="medical_centers_specialities" )
+    procedure                       = models.ManyToManyField(Procedure, related_name="medical_centers_procedure" )
+    contracted_health_institutions  = models.ManyToManyField(HealthInstitutions, related_name="medical_centers_health_inst" )
 
     # available_features 
-    # photos
-    # videos
-    # country
+    # kullanılan teknolojiler, 
+    # akreditasyon belgeleri, 
+    # sağlık turizmi belgeleri
 
     def __str__(self):
         return self.center_name

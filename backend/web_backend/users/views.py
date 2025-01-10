@@ -15,6 +15,10 @@ import jwt, datetime, json, environ, os
 from .serializers import UserSerializers
 from .models import User
 from patient.models import Patient
+from medical_centers.models import MedicalCenter
+from medical_centers.models import Speciality, Procedure, HealthInstitutions
+from medical_centers.models import Doctor
+from medical_centers.models import MedicalCenterPhotos, MedicalCenterVideos
 
 env = environ.Env()
 environ.Env.read_env(os.path.join(settings.BASE_DIR, '.env'))
@@ -76,14 +80,19 @@ class RegisterView(APIView):
             except:
                 # ! oluşturulan user'ı silmek gerekir
                 return Response( 
-                    {"message": "Patient couldn't created"}, 
+                    {"message": "Patient registeration couldn't be done"}, 
                     status=status.HTTP_400_BAD_REQUEST)
             
-        elif user_type == "hospital":
-            pass
-            # Hospital.objects.create(user=user)
+        elif user_type == "medical-center":
+            try:
+                MedicalCenter.objects.create(user=user)
+            except:
+                # ! oluşturulan user'ı silmek gerekir
+                return Response( 
+                    {"message": "Medical Center registeration couldn't be done"}, 
+                    status=status.HTTP_400_BAD_REQUEST)
         else:
-            raise ValidationError({"user_type": "You must specify a valid user type ('patient' or 'hospital')."})
+            raise ValidationError({"user_type": "You must specify a valid user type ('patient' or 'medical-center')."})
 
         # return saved register data
         return Response(

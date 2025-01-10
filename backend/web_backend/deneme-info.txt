@@ -6,6 +6,13 @@ register
     "password": "930615Fly",
     "user_type": "patient"
 }
+{
+    "first_name": "doktor",
+    "last_name": "biri",
+    "email": "medical@gmail.com",
+    "password": "930615Fly",
+    "user_type": "medical-center"
+}
 
 login
 {

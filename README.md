@@ -41,3 +41,9 @@ python manage.py import_health_institutions
 >> /health-tourism-website/backend/web_backend$
 django manage.py runserver
 ```
+
+
+you can find some example data in deneme-info.txt for api test 
+```
+/home/gokce/Masaüstü/Projects/Adapha/health-tourism-website/backend/web_backend/deneme-info.txt
+```
