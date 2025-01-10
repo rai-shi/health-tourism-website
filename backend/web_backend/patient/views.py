@@ -16,7 +16,7 @@ def getPatientByID(payload):
     user = getUserByID(payload=payload)
     patient = Patient.objects.filter(user=user.id).first()
     if not patient:
-        raise AuthenticationFailed("Patient not found!")
+        raise AuthenticationFailed("Patient is not found!")
     
     return (user, patient)
     

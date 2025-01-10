@@ -2,7 +2,7 @@ from django.urls import path
 from .views import * 
 
 urlpatterns = [
-    # path('medical-center-profile/'),        # GET
+    path('profile/', MedicalCenterView.as_view(), name="profile"),        # GET
     # path('medical-center-statistics/'),     # GET
     # path('update-information/'),            # PATCH
     # path('preview-text'),                   # PUT, DELETE
