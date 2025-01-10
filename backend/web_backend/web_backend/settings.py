@@ -45,10 +45,12 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
 
+    # project apps
     'users',
     'patient',
-    'hospital',
+    'medical_centers',
 
+    # api packages
     'rest_framework',
     'rest_framework_simplejwt',
     'rest_framework.authtoken',
@@ -59,11 +61,14 @@ INSTALLED_APPS = [
     'dj_rest_auth.registration',
     'corsheaders',
 
+    # swagger packages
     'rest_framework_swagger',
     'drf_yasg', 
 
+    # other packages
     'cities_light',
     'phonenumber_field',
+    'markdownx'
 ]
 
 
@@ -173,3 +178,6 @@ AUTH_USER_MODEL =  "users.User"
 
 CORS_ORIGIN_ALLOW_ALL = True
 CORS_ALLOW_CREDENTIALS = True
+
+MEDIA_URL = '/media/'
+MEDIA_ROOT = BASE_DIR / 'media'

@@ -21,6 +21,9 @@ pip install -r requirements.txt
 django manage.py makemigrations
 django manage.py migrate
 django manage.py cities-light 
+python manage.py import_specialities
+python manage.py import_procedure
+python manage.py import_health_institutions
 
 django manage.py runserver
 ```

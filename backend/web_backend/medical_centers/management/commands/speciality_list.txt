@@ -1,0 +1,62 @@
+Ağız Ve Diş Sağlığı
+Aile Hekimliği
+Akupunktur
+Algoloji
+Anestezi ve Reaminasyon
+Beyin ve Sinir Cerrahisi
+Çocuk Cerrahisi
+Çocuk Endokrinoloji
+Çocuk Enfeksiyon
+  Çocuk Göğüs Hastalıkları
+  Çocuk Hematoloji ve Onkoloji
+  Çocuk Sağlığı ve Hastalıkları
+  Çocuk İmmünoloji ve Alerji Hastalıkları
+  Çocuk Ruh Sağlığı ve Hastalıkları
+  Çocuk Gastroenteroloji
+  Çocuk Gelişimi
+  Çocuk Kardiyolojisi
+  Çocuk Nörolojisi
+  Çocuk Nefrolojisi
+  Çocuk Onkolojisi
+  Çocuk Psikiyatri
+  Çocuk Psikoloji
+  Çocuk Ürolojisi
+  Beslenme ve Diyet
+  Dermatoloji
+  Endokrinoloji ve Metabolizma Hastalıkları
+  Enfeksiyon Hastalıkları ve Klinik Mikrobiyoloji
+  Fiziksel Tıp ve Rehabilitasyon
+  Gastroenteroloji
+  Geleneksel ve Tamamlayıcı Tıp
+  Genel Cerrahi
+  Geriatri
+  Göğüs Hastalıkları
+  Göğüs Cerrahi
+  Göz Hastalıkları
+  Hematoloji
+  İç Hastalıkları
+  İmmünoloji ve Alerji Hastalıkları
+  Jinekolojik Onkoloji
+  Kadın Hastalıkları ve Doğum
+  Kalp ve Damar Cerrahisi
+  Kardiyoloji
+  Kemoterapi
+  Kulak Burun ve Boğaz Hastalıkları
+  Nefroloji
+  Nöroloji
+  Nükleer Tıp
+  Obezite ve Obezite Cerrahisi
+  Onkolojik Cerrahi
+  Organ Nakli
+  Ortopedi ve Travmatoloji
+  Perinatoloji
+  Patoloji
+  Plastik ve Rekonstrüktif Cerrahi
+  Psikiyatri
+  Radyasyon Onkoloji
+  Robotik Cerrahi
+  Romatoloji
+  Ruh Sağlığı Ve Hastalıkları
+  Tıbbi Onkoloji
+  Tüp Bebek Merkezi
+  Üroloji

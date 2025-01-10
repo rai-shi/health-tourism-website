@@ -11,3 +11,5 @@ django-cities-light
 "django-phonenumber-field[phonenumbers]"
 django-rest-swagger
 drf-yasg
+Pillow
+django-markdownx
