@@ -1,17 +1,10 @@
 from rest_framework import serializers
 from .models import *
 
-from rest_framework import serializers
-from .models import *
-
-class MedicalCenterSerializers(serializers.ModelSerializer):
-    # Many-to-many ilişkiler için nested serializer'lar eklenebilir
-    specialities = serializers.StringRelatedField(many=True)
-    procedure = serializers.StringRelatedField(many=True)
-    contracted_health_institutions = serializers.StringRelatedField(many=True)
-    doctors = serializers.StringRelatedField(many=True)
-    medical_center_photos = serializers.StringRelatedField(many=True)
-    medical_center_videos = serializers.StringRelatedField(many=True)
+class MedicalCenterSerializer(serializers.ModelSerializer):
+    specialities = serializers.SerializerMethodField()
+    procedures = serializers.SerializerMethodField()
+    contracted_health_institutions = serializers.SerializerMethodField()
 
     class Meta:
         model = MedicalCenter
@@ -25,13 +18,48 @@ class MedicalCenterSerializers(serializers.ModelSerializer):
             "web_site",
             "preview_text",
             "overview_text",
-            "specialities",  # Many-to-many ilişkiler
-            "procedure",  # Many-to-many ilişkiler
-            "contracted_health_institutions",  # Many-to-many ilişkiler
-            "doctors",  # Many-to-many ilişkiler
-            "medical_center_photos",  # Many-to-many ilişkiler
-            "medical_center_videos",  # Many-to-many ilişkiler
+            "specialities",
+            "procedures",
+            "contracted_health_institutions",
         ]
         extra_kwargs = {
-                
+            "user": {"read_only": True},
         }
+
+    def get_specialities(self, obj):
+        return [speciality.name for speciality in obj.specialities.all()]
+
+    def get_procedures(self, obj):
+        return [procedure.name for procedure in obj.procedures.all()]
+
+    def get_contracted_health_institutions(self, obj):
+        return [institution.name for institution in obj.contracted_health_institutions.all()]
+
+
+
+
+
+class UpdateMedicalCenterSerializer(serializers.ModelSerializer):
+    specialities = serializers.ListField(
+        child=serializers.IntegerField(), required=True
+    )
+    procedures = serializers.ListField(
+        child=serializers.IntegerField(), required=True
+    )
+    contracted_health_institutions = serializers.ListField(
+        child=serializers.IntegerField(), required=True
+    )
+
+    class Meta:
+        model = MedicalCenter
+        fields = [
+            "center_name", "center_type", "city", "contact_number",
+            "mail_address", "web_site", "preview_text", "overview_text",
+            "specialities", "procedures", "contracted_health_institutions",
+        ]
+
+    def validate_contact_number(self, value):
+        if not value.startswith("+90"):
+            raise serializers.ValidationError("Phone number must be a valid Turkish number.")
+        return value
+

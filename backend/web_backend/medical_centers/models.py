@@ -70,7 +70,7 @@ class MedicalCenter(models.Model):
     overview_text   = MarkdownxField( null=True )
 
     specialities                    = models.ManyToManyField(Speciality, related_name="medical_centers_specialities" )
-    procedure                       = models.ManyToManyField(Procedure, related_name="medical_centers_procedure" )
+    procedures                      = models.ManyToManyField(Procedure, related_name="medical_centers_procedure" )
     contracted_health_institutions  = models.ManyToManyField(HealthInstitutions, related_name="medical_centers_health_inst" )
 
     # available_features 
