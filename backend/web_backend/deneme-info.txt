@@ -41,3 +41,19 @@ update-personal-info
     "country": "TR",
     "city": "Samsun"
 }
+
+
+    {
+        "user": 10,
+        "center_name": "Awesome Medical Center",
+        "center_type": "Hosp",
+        "city": "IST",
+        "contact_number": "+905555555555",
+        "mail_address": "info@medicalcenter.com",
+        "web_site": "https://medicalcenter.com",
+        "preview_text": "Lorem ipsum...",
+        "overview_text": "Details about the medical center...",
+        "specialities": [5, 10],
+        "procedures": [12, 1],
+        "contracted_health_institutions": [1, 2, 3]
+    }
