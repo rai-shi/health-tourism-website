@@ -18,12 +18,15 @@ class Command(BaseCommand):
 
         with open(file_path, 'r', encoding='utf-8') as file:
             for line in file:
-                speciality_name = line.strip()  
+                stripted_line = line.strip() 
+                nameandcode = stripted_line.split(",")
+                name = nameandcode[0] 
+                code = nameandcode[1]  
                 
-                if not HealthInstitutions.objects.filter(name=speciality_name).exists():
-                    HealthInstitutions.objects.create(name=speciality_name)
-                    self.stdout.write(self.style.SUCCESS(f'Successfully added speciality: {speciality_name}'))
+                if not HealthInstitutions.objects.filter(name=name, code=code).exists():
+                    HealthInstitutions.objects.create(name=name, code=code)
+                    self.stdout.write(self.style.SUCCESS(f'Successfully added speciality: {name}'))
                 else:
-                    self.stdout.write(self.style.NOTICE(f'Speciality already exists: {speciality_name}'))
+                    self.stdout.write(self.style.NOTICE(f'Speciality already exists: {name}'))
 
         self.stdout.write(self.style.SUCCESS('Import completed'))

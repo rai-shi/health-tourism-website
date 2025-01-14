@@ -7,18 +7,22 @@ from markdownx.models import MarkdownxField
 
 class Speciality(models.Model):
     name = models.CharField(max_length=100, unique=True)
+    code = models.CharField(max_length=15, unique=True)
 
     def __str__(self):
         return self.name
     
 class Procedure(models.Model):
     name = models.CharField(max_length=100, unique=True)
+    code = models.CharField(max_length=15, unique=True)
+    speciality_code = models.ForeignKey(Speciality, on_delete=models.CASCADE )
 
     def __str__(self):
         return self.name
     
 class HealthInstitutions(models.Model):
     name = models.CharField(max_length=100, unique=True)
+    code = models.CharField(max_length=15, unique=True)
 
     def __str__(self):
         return self.name

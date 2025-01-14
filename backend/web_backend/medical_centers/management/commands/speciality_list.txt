@@ -1,62 +1,57 @@
-Ağız Ve Diş Sağlığı
-Aile Hekimliği
-Akupunktur
-Algoloji
-Anestezi ve Reaminasyon
-Beyin ve Sinir Cerrahisi
-Çocuk Cerrahisi
-Çocuk Endokrinoloji
-Çocuk Enfeksiyon
-  Çocuk Göğüs Hastalıkları
-  Çocuk Hematoloji ve Onkoloji
-  Çocuk Sağlığı ve Hastalıkları
-  Çocuk İmmünoloji ve Alerji Hastalıkları
-  Çocuk Ruh Sağlığı ve Hastalıkları
-  Çocuk Gastroenteroloji
-  Çocuk Gelişimi
-  Çocuk Kardiyolojisi
-  Çocuk Nörolojisi
-  Çocuk Nefrolojisi
-  Çocuk Onkolojisi
-  Çocuk Psikiyatri
-  Çocuk Psikoloji
-  Çocuk Ürolojisi
-  Beslenme ve Diyet
-  Dermatoloji
-  Endokrinoloji ve Metabolizma Hastalıkları
-  Enfeksiyon Hastalıkları ve Klinik Mikrobiyoloji
-  Fiziksel Tıp ve Rehabilitasyon
-  Gastroenteroloji
-  Geleneksel ve Tamamlayıcı Tıp
-  Genel Cerrahi
-  Geriatri
-  Göğüs Hastalıkları
-  Göğüs Cerrahi
-  Göz Hastalıkları
-  Hematoloji
-  İç Hastalıkları
-  İmmünoloji ve Alerji Hastalıkları
-  Jinekolojik Onkoloji
-  Kadın Hastalıkları ve Doğum
-  Kalp ve Damar Cerrahisi
-  Kardiyoloji
-  Kemoterapi
-  Kulak Burun ve Boğaz Hastalıkları
-  Nefroloji
-  Nöroloji
-  Nükleer Tıp
-  Obezite ve Obezite Cerrahisi
-  Onkolojik Cerrahi
-  Organ Nakli
-  Ortopedi ve Travmatoloji
-  Perinatoloji
-  Patoloji
-  Plastik ve Rekonstrüktif Cerrahi
-  Psikiyatri
-  Radyasyon Onkoloji
-  Robotik Cerrahi
-  Romatoloji
-  Ruh Sağlığı Ve Hastalıkları
-  Tıbbi Onkoloji
-  Tüp Bebek Merkezi
-  Üroloji
+Addiction Treatment,AT
+Aesthetics,Aest
+Allergy,All
+Anesthesiology,Anes
+Bariatrics,Bar
+Cancer Treatment,CT
+Cardiac Surgery,CS
+Cardiology,Card
+Checkup,C/U
+Dental Care,Dent
+Dermatology,Derm
+Dialysis,Dialen
+Endocrinology,Endo
+Ear-Nose-Throat,ENT
+Eye Surgery,ES
+Gastroenterology,GI
+General Surgery,GS
+Geriatrics,Geri
+Hair Transplant,HT
+Hematology,Hem
+Hepatology,Hep
+Imaging,Img
+Immunology,Imm
+Infertility Treatment,IF
+Internal Medicine,IntMed
+Nephrology,Neph
+Neurology,Neurol
+Neurosurgery,NeuroSurg
+Obstetrics and Gynecology,ObGyn
+Orthopedic Surgery,Ortho
+Pediatrics,Ped
+Plastic Surgery,PlastSurg
+Psychiatry,Psych
+Psychology,Psychol
+Pulmonology,Pulm
+Rehabilitation,Rehab
+Rheumatology,Rheum
+Robotic Surgery,RS
+Stem Cell Therapy,SCT
+Transplantation,Trans
+Urology,Urol
+Vascular Surgery,VascSurg
+Family Medicine,FM
+Acupuncture,Acu
+Algology,Alg
+Infectious Diseases and Clinical Microbiology,ID/CM
+Traditional and Complementary Medicine,TCM
+Gynecologic Oncology,GynOncol
+Chemotherapy,Chemo
+Nuclear Medicine,NucMed
+Oncology Surgery,OncolSurg
+Organ Transplantation,OT
+Perinatology,Peri
+Pathology,Path
+Radiation Oncology,RadOnc
+Medical Oncology,MedOncol
+In Vitro Fertilization Center,IVFCenter

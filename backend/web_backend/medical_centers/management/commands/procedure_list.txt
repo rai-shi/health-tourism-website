@@ -1,52 +1,102 @@
-Ağız ve Diş Sağlığı Hizmetleri
-Alzheimer
-Anjiyo
-Beyin Ameliyatı
-Bel Fıtığı Ameliyatı
-Botoks Uygulamaları
-Burun estetiği
-Check-up Hizmetleri
-Çocuk Sağlığı ve Hastalıkları
-Çölyak
-Demans
-Diyabet
-Diş İle İlgili Hastalıklar
-Diş Beyazlatma
-Diş Estetiği
-Diyaliz
-Diyet
-Felç
-Fizik Tedavi Uygulamaları
-Fitoterapi
-Geleneksel ve Tamamlayıcı Tıp
-Genel Cerrahi Uygulamaları
-Genel Diş Tedavileri
-Genital Estetik Uygulamaları
-Göğüs Hastalıkları
-Göz Sağlığı ve Hastalıkları
-Hacamat
-İmplant Tedavisi
-Kalça ve Diz Protezi
-Kalp ve Damar Hastalıkları
-Karın içi ameliyatları
-Katarakt
-Kemik İliği Nakli
-Kök Hücre Tedavileri
-Kısırlık Tedavileri
-Kulak Burun Boğaz
-Kulak Cerrahisi
-Liposuction
-Madde Bağımlılığı Tedavisi
-Meme Ameliyatları
-Obezite Cerrahisi
-Onkolojik Hastalıklar
-Organ Nakli
-Ortopedik Tedavi
-PRP Uygulamaları
-Saç Ekimi
-Tıbbi Görüntüleme İşlemleri
-Tiroid ameliyatları
-Tüp Bebek Tedavisi
-Üroloji
-Vücut Estetiği
-Yüz Estetiği
+Alcohol addiction treatment,AT-1,AT
+Drug addiction treatment,AT-2,AT
+Gambling addiction treatment,AT-3,AT
+Nicotine addiction treatment,AT-4,AT
+Perfectionism treatment,AT-5,AT
+Acne Treatment,Aest-1,Aest
+Biorevitalization,Aest-2,Aest
+Botox injections,Aest-3,Aest
+Cellulite Treatment- Velashape,Aest-4,Aest
+Chemical Exfoliation,Aest-5,Aest
+Cryotherapy,Aest-6,Aest
+Eyelash growth stimulation - Latisse,Aest-7,Aest
+Facelift/Mini-lift,Aest-8,Aest
+Hyaluronic Acid Injections,Aest-9,Aest
+Laser Hair Removal,Aest-10,Aest
+Laser removal of blood vessels,Aest-11,Aest
+Laser Skin Resurfacing,Aest-12,Aest
+Mesotherapy,Aest-13,Aest
+Pigmentation removal - Laser therapy,Aest-14,Aest
+Problem Skin,Aest-15,Aest
+Removal of birthmarks - LT,Aest-16,Aest
+Scar removal,Aest-17,Aest
+Skin Resurfacing/Microdermabrasion,Aest-18,Aest
+Tattoo removal,Aest-19,Aest
+Thermage skin treatment,Aest-20,Aest
+Ultrasonic Exfoliation,Aest-21,Aest
+Ultrasonic Liposuction,Aest-22,Aest
+Allergic conjunctivitis,All-1,All
+Allergic rhinitis,All-2,All
+Atopic dermatitis,All-3,All
+Bronchial asthma,All-4,All
+Food allergy,All-5,All
+Pediatric allergy,All-6,All
+Pollen allergy - Pollinosis,All-7,All
+Urticaria,All-8,All
+Epidural,Anes-1,Anes
+Pain syndromes,Anes-2,Anes
+Spinal,Anes-3,Anes
+Biliopancreatic diversion,Bar-1,Bar
+Endoluminal surgery,Bar-2,Bar
+Gastric balloon insertion,Bar-3,Bar
+Gastric banding,Bar-4,Bar
+Gastric banding,Bar-5,Bar
+Gastroplication,Bar-6,Bar
+Sleeve gastroplasty,Bar-7,Bar
+Vertical gastroplasty,Bar-8,Bar
+Bladder cancer treatment,CT-1,CT
+Bone cancer treatment,CT-2,CT
+Bone marrow transplant,CT-3,CT
+Brain tumor surgery,CT-4,CT
+Breast cancer treatment,CT-5,CT
+Cancer rehabilitation,CT-6,CT
+CARL Therapy,CT-7,CT
+Cervical cancer treatment,CT-8,CT
+Chemotherapy,CT-9,CT
+Colon cancer treatment,CT-10,CT
+Endometrial carcinoma treatment,CT-11,CT
+Ewing sarcoma,CT-12,CT
+Gastric cancer treatment,CT-13,CT
+Gene therapy,CT-14,CT
+Kidney cancer treatment,CT-15,CT
+Laryngeal cancer treatment,CT-16,CT
+Leukemia,CT-17,CT
+Leukemia treatment,CT-18,CT
+Liver cancer treatment,CT-19,CT
+Lung cancer treatment,CT-20,CT
+Lymphoma,CT-21,CT
+Medulloblastoma,CT-22,CT
+Melanoma,CT-23,CT
+Mesothelioma,CT-24,CT
+Neuroblastoma,CT-25,CT
+Nuclear medicine,CT-26,CT
+Oral cancer treatment,CT-27,CT
+Osteosarcoma,CT-28,CT
+Ovarian cancer treatment,CT-29,CT
+Pancreatic cancer treatment,CT-30,CT
+Pediatric oncology,CT-31,CT
+Photodynamic therapy (PDT),CT-32,CT
+Pneumonectomy,CT-33,CT
+Prostate cancer treatment,CT-34,CT
+Radiation therapy,CT-35,CT
+Rectal cancer treatment,CT-36,CT
+Retinoblastoma,CT-37,CT
+Sarcoma,CT-38,CT
+Skin cancer treatment,CT-39,CT
+Testicular cancer treatment,CT-40,CT
+Thyroid cancer treatment,CT-41,CT
+Wilms' tumor (nephroblastoma),CT-42,CT
+Angiography,CS-1,CS
+Atherectomy,CS-2,CS
+Balloon valvuloplasty,CS-3,CS
+Coronary angioplasty,CS-4,CS
+Coronary artery bypass grafting (CABG),CS-5,CS
+Coronary stenting,CS-6,CS
+Heart transplantation,CS-7,CS
+Hybrid operating room,CS-8,CS
+Pacemaker implantation,CS-9,CS
+Pediatric heart surgery,CS-10,CS
+Rotablation,CS-11,CS
+Surgical aneurysm repair,CS-12,CS
+Valve replacement,CS-13,CS
+Acoustic neuroma,ENT-1,ENT

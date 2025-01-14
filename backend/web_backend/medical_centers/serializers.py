@@ -67,8 +67,7 @@ class MedicalCenterUpdateSerializer(serializers.ModelSerializer):
         queryset=Procedure.objects.all(), 
         many=True)
     contracted_health_institutions = serializers.PrimaryKeyRelatedField(
-        queryset=HealthInstitutions.objects.all(), 
-        many=True)
+        queryset=HealthInstitutions.objects.all(), many=True)
 
     class Meta:
         model = MedicalCenter

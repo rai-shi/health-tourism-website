@@ -1,4 +1,4 @@
-SGK
-Allianz Sigorta
-Anadolu Sigorta
-AXA Sigorta
+Sağlık Sigorta Kurumu, SGK
+Allianz Sigorta, Allianz
+Anadolu Sigorta, Anadolu
+AXA Sigorta, AXA

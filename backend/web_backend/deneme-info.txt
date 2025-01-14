@@ -20,6 +20,11 @@ login
 "password": "930615Fly"
 }
 
+{
+ "email" : "medical@gmail.com",
+"password" : "930615Fly"
+}
+
 change-password
 {
 "old_password" : "930615Fly",

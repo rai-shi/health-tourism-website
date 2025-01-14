@@ -20,12 +20,16 @@ class Command(BaseCommand):
 
         with open(file_path, 'r', encoding='utf-8') as file:
             for line in file:
-                speciality_name = line.strip()  
+                speciality_line = line.strip() 
+                speciality_line = speciality_line.split(",")
+                name = speciality_line[0] 
+                code = speciality_line[1]
+                # print(name, code) 
                 
-                if not Speciality.objects.filter(name=speciality_name).exists():
-                    Speciality.objects.create(name=speciality_name)
-                    self.stdout.write(self.style.SUCCESS(f'Successfully added speciality: {speciality_name}'))
+                if not Speciality.objects.filter(name=name).exists():
+                    Speciality.objects.create(name=name, code=code)
+                    self.stdout.write(self.style.SUCCESS(f'Successfully added speciality: {name}'))
                 else:
-                    self.stdout.write(self.style.NOTICE(f'Speciality already exists: {speciality_name}'))
+                    self.stdout.write(self.style.NOTICE(f'Speciality already exists: {name}'))
 
         self.stdout.write(self.style.SUCCESS('Import completed'))
