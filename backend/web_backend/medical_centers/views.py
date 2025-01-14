@@ -33,9 +33,7 @@ class MedicalCenterView(APIView):
             "med-cent":med_cent_serializer.data   
         }
         return Response(response)
-
-
-class MedicalCenterUpdateView(APIView):
+    
     def put(self, request):
         token = request.COOKIES.get("jwt")
         payload = isTokenValid(token=token)
@@ -50,6 +48,15 @@ class MedicalCenterUpdateView(APIView):
                 "message": "Medical Center information is successfully updated.",
             },
             status=status.HTTP_200_OK
-        )   
+            )   
             return response
         return Response(serializer.errors, status=400)
+
+
+class MedicalCenterDoctorsView(APIView):
+    def post():
+        pass 
+    def put():
+        pass 
+    def delete():
+        pass 

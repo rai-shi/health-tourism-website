@@ -59,64 +59,16 @@ class MedicalCenterSerializer(serializers.ModelSerializer):
     def get_contracted_health_institutions(self, obj):
         return [inst.name for inst in obj.contracted_health_institutions.all()]
 
-
-# class MedicalCenterUpdateSerializer(serializers.ModelSerializer):
-#     specialities = serializers.ListField(
-#         child=serializers.IntegerField(), required=False
-#     )
-#     procedures = serializers.ListField(
-#         child=serializers.IntegerField(), required=False
-#     )
-#     contracted_health_institutions = serializers.ListField(
-#         child=serializers.IntegerField(), required=False
-#     )
-
-#     class Meta:
-#         model = MedicalCenter
-#         fields = [
-#             "center_name", "center_type", "city", 
-#             "contact_number", "mail_address", "web_site", 
-#             "preview_text", "overview_text", 
-#             "specialities", "procedures", "contracted_health_institutions"
-#         ]
-#         extra_kwargs = {
-#             "specialities": {"required": False}, 
-#             "procedures": {"required": False}, 
-#             "contracted_health_institutions": {"required": False}
-#         }
-
-#     def update(self, instance, validated_data):
-#         specialities_data = validated_data.pop("specialities", None)
-#         procedures_data = validated_data.pop("procedures", None)
-#         health_institutions_data = validated_data.pop("contracted_health_institutions", None)
-
-#         for attr, value in validated_data.items():
-#             setattr(instance, attr, value)
-        
-#         if specialities_data is not None:
-#             specialities = Speciality.objects.filter(id__in=specialities_data).get()
-#             instance.specialities.set(specialities)
-#             print("specialities done")
-
-#         if procedures_data is not None:
-#             procedures = Procedure.objects.filter(id__in=procedures_data).get()
-#             instance.procedures.set(procedures)
-#             print("procedures done")
-
-#         if health_institutions_data is not None:
-#             health_institutions = HealthInstitutions.objects.filter(id__in=health_institutions_data).get()
-#             instance.contracted_health_institutions.set(health_institutions)
-#             print("sigorta done")
-
-#         instance.save()
-#         print(instance)
-#         return instance
-
-
 class MedicalCenterUpdateSerializer(serializers.ModelSerializer):
-    specialities = serializers.PrimaryKeyRelatedField(queryset=Speciality.objects.all(), many=True)
-    procedures = serializers.PrimaryKeyRelatedField(queryset=Procedure.objects.all(), many=True)
-    contracted_health_institutions = serializers.PrimaryKeyRelatedField(queryset=HealthInstitutions.objects.all(), many=True)
+    specialities = serializers.PrimaryKeyRelatedField(
+        queryset=Speciality.objects.all(), 
+        many=True)
+    procedures = serializers.PrimaryKeyRelatedField(
+        queryset=Procedure.objects.all(), 
+        many=True)
+    contracted_health_institutions = serializers.PrimaryKeyRelatedField(
+        queryset=HealthInstitutions.objects.all(), 
+        many=True)
 
     class Meta:
         model = MedicalCenter
