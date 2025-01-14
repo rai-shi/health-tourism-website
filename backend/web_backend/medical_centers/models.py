@@ -86,15 +86,21 @@ class MedicalCenter(models.Model):
         return self.center_name
 
 class Doctor(models.Model):
+    TITLE_CHOICES = [
+        ("Dr." , "Doctor"),
+        ("Prof. Dr." , "Professor Doctor"),
+        ("Assoc. Dr." , "Associated Doctor"),
+        ("Asst. Dr." , "Assistant Professor"),
+    ]
     name            = models.CharField(max_length=50)
     surname         = models.CharField(max_length=50)
-    title           = models.CharField(max_length=100)
+    title           = models.CharField(max_length=100, choices=TITLE_CHOICES, default="Dr.", null=True )
     major           = models.CharField(max_length=100)
-    minor           = models.CharField(max_length=100)
+    minor           = models.CharField(max_length=100, null=True)
     related_center  = models.ForeignKey(MedicalCenter, on_delete=models.CASCADE, related_name='doctors')
 
     def __str__(self):
-        return f"{self.name} {self.surname}"
+        return f"{self.title} {self.name} {self.surname}"
 
 class MedicalCenterPhotos(models.Model):
     medical_center  = models.ForeignKey(MedicalCenter, on_delete=models.CASCADE, related_name='medical_center_photos')

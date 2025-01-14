@@ -47,7 +47,7 @@ update-personal-info
     "city": "Samsun"
 }
 
-
+medical-center information updating
 {
     "user": 10,
     "center_name": "Awesome Medical Center",
@@ -61,4 +61,40 @@ update-personal-info
     "specialities": [5, 10],
     "procedures": [12, 1],
     "contracted_health_institutions": [1, 2, 3]
+}
+
+doctors creating
+{
+    "doctors" : [
+    {
+        "name" : "serhat",
+        "surname" : "koçer",
+        "title" : "Dr.",
+        "major" : "AT",
+        "minor" : "Anes"
+    },
+    {
+        "name" : "faruk",
+        "surname" : "necip",
+        "title" : "Prof. Dr.",
+        "major" : "Aest"
+    }
+]
+}
+one doctor record
+{
+"doctors" : [
+    {
+        "name" : "serhat",
+        "surname" : "koçer",
+        "title" : "Dr.",
+        "major" : "AT",
+        "minor" : "Anes"
+    }
+]
+}
+
+multiple doctor deletion
+{
+"ids" : [2,3]
 }

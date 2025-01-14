@@ -5,9 +5,12 @@ from django.shortcuts import get_object_or_404
 
 
 class DoctorSerializer(serializers.ModelSerializer):
+    related_center = serializers.PrimaryKeyRelatedField(queryset=MedicalCenter.objects.all())
+
     class Meta:
         model = Doctor
-        fields = ["name", "surname", "title", "major", "minor"]
+        fields = '__all__' 
+
 
 class MedicalCenterPhotosSerializer(serializers.ModelSerializer):
     class Meta:

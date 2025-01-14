@@ -20,6 +20,8 @@ from medical_centers.models import Speciality, Procedure, HealthInstitutions
 from medical_centers.models import Doctor
 from medical_centers.models import MedicalCenterPhotos, MedicalCenterVideos
 
+from django.shortcuts import redirect
+from django.urls import reverse
 env = environ.Env()
 environ.Env.read_env(os.path.join(settings.BASE_DIR, '.env'))
 
