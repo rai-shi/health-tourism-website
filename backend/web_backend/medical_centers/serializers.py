@@ -54,13 +54,13 @@ class MedicalCenterSerializer(serializers.ModelSerializer):
         }
 
     def get_specialities(self, obj):
-        return [speciality.name for speciality in obj.specialities.all()]
-
+        return [{"id": speciality.id, "name": speciality.name, "code":speciality.code}  for speciality in obj.specialities.all()] 
+    
     def get_procedures(self, obj):
-        return [procedure.name for procedure in obj.procedures.all()]
+        return [{"id": procedure.id, "name": procedure.name, "code":procedure.code, "speciality":procedure.speciality.id} for procedure in obj.procedures.all()]
 
     def get_contracted_health_institutions(self, obj):
-        return [inst.name for inst in obj.contracted_health_institutions.all()]
+        return [{"id":inst.id, "name":inst.name, "code": inst.code} for inst in obj.contracted_health_institutions.all()]
 
 class MedicalCenterUpdateSerializer(serializers.ModelSerializer):
     specialities = serializers.PrimaryKeyRelatedField(

@@ -26,6 +26,7 @@ def getMedicalCenterByID(payload):
     return (user, med_cent)
 
 class MedicalCenterView(APIView):
+    # list all infos
     def get(self, request):
         token = request.COOKIES.get("jwt")
         payload = isTokenValid(token=token)
@@ -41,13 +42,14 @@ class MedicalCenterView(APIView):
         }
         return Response(response)
     
+    # used only one right after registeration for fully updating the whole profile
     def put(self, request):
         token = request.COOKIES.get("jwt")
         payload = isTokenValid(token=token)
 
         user, med_cent = getMedicalCenterByID(payload=payload)
 
-        serializer = MedicalCenterUpdateSerializer(med_cent, data=request.data, partial=True)
+        serializer = MedicalCenterUpdateSerializer(med_cent, data=request.data)
         if serializer.is_valid():
             serializer.save()
             response = Response(
@@ -59,6 +61,25 @@ class MedicalCenterView(APIView):
             return response
         return Response(serializer.errors, status=400)
 
+    # will used when updating the profile partially
+    def patch(self, request):
+        token = request.COOKIES.get("jwt")
+        payload = isTokenValid(token=token)
+
+        user, med_cent = getMedicalCenterByID(payload=payload)
+
+        serializer = MedicalCenterUpdateSerializer(med_cent, data=request.data, partial=True)
+
+        if serializer.is_valid():
+            serializer.save()
+            response = Response(
+                {
+                    "message": "Medical Center information is successfully updated.",
+                },
+                status=status.HTTP_200_OK
+            )   
+            return response
+        return Response(serializer.errors, status=400)
 
 class MedicalCenterDoctorsView(APIView):
     # record of one doctor or many doctor
@@ -162,3 +183,5 @@ class MedicalCenterDoctorsView(APIView):
             {"message": f"{deleted_count} doctors successfully deleted."},
             status=status.HTTP_200_OK
         )
+
+
