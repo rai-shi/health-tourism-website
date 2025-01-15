@@ -61,13 +61,14 @@ class MedicalCenterView(APIView):
 
 
 class MedicalCenterDoctorsView(APIView):
+    # record of one doctor or many doctor
     def post(self, request):
         token = request.COOKIES.get("jwt")
         payload = isTokenValid(token=token)
 
         user, med_cent = getMedicalCenterByID(payload=payload)
-
-        doctors = request.data.get("doctors")
+        doctors = request.data.get("doctors", [])
+        # {"doctors": [{}, {}]}
         for doctor in doctors:
             # Set the related_center field using the retrieved medical center object
             doctor['related_center'] = med_cent.id
@@ -86,12 +87,31 @@ class MedicalCenterDoctorsView(APIView):
         )
         return response
             
-    def put():
-        pass 
+    def patch(self, request, pk):
+        token = request.COOKIES.get("jwt")
+        payload = isTokenValid(token=token)
+
+        # user, med_cent = getMedicalCenterByID(payload=payload)
+        if pk is not None:
+            try:
+                doctor = Doctor.objects.get(id=pk) 
+            except Doctor.DoesNotExist:
+                return Response(
+                    {"message": "Doctor not found!"},
+                    status=status.HTTP_404_NOT_FOUND
+                )
+            serializer = DoctorSerializer(doctor, data=request.data, partial=True)
+        
+            if serializer.is_valid():
+                serializer.save() 
+                return Response(serializer.data, status=status.HTTP_200_OK)
+            
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
     def get(self, request, pk=None):
         token = request.COOKIES.get("jwt")
-        isTokenValid(token=token)
+        payload = isTokenValid(token=token)
+        user, medcent = getMedicalCenterByID(payload=payload)
 
         # if spesific doctor is requested
         if pk is not None:
@@ -106,10 +126,9 @@ class MedicalCenterDoctorsView(APIView):
             return Response( serializer.data, status=status.HTTP_200_OK )
         
         # if doctors list requested
-        doctors = Doctor.objects.all()
+        doctors = Doctor.objects.filter( related_center = medcent.id )
         serializer = DoctorSerializer(doctors, many=True)
         return Response( serializer.data, status=status.HTTP_200_OK )
-
 
     def delete(self, request, pk=None):
         token = request.COOKIES.get("jwt")
