@@ -184,4 +184,21 @@ class MedicalCenterDoctorsView(APIView):
             status=status.HTTP_200_OK
         )
 
+class MedicalCenterSpecialitiesView(APIView):
+    def get(self, request):
+        token = request.COOKIES.get("jwt")
+        payload = isTokenValid(token)
 
+        user, medcent = getMedicalCenterByID(payload=payload)
+
+        specialities = medcent.specialities.all()
+
+        # Specialities verisini serialize et
+        serializer = MedicalCenterSpecialitySerializer(specialities, many=True, context= {"medcent":medcent})
+        return Response( serializer.data, status=status.HTTP_200_OK )
+        # return Response( serializer.error, status=status.HTTP_404_NOT_FOUND )
+    
+    def post(self, request):
+        pass
+    def delete(self, request):
+        pass

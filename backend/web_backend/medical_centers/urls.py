@@ -9,15 +9,16 @@ urlpatterns = [
     # GET, POST, PATCH, DELETE  
     path('profile/doctors/', MedicalCenterDoctorsView.as_view(), name="doctors"),
     # GET, DELETE, PATCH
-    path('profile/doctors/<int:pk>/', MedicalCenterDoctorsView.as_view(), name="doctor-detail")
+    path('profile/doctors/<int:pk>/', MedicalCenterDoctorsView.as_view(), name="doctor-detail"),
     
+    path('profile/specialities/', MedicalCenterSpecialitiesView.as_view(), name="specialities"),                  # POST, DELETE
+    # path('procedure/'),                     # POST, DELETE
+
     # path('medical-center-photos/'),         # POST, DELETE
     # path('medical-center-videos/'),         # POST, DELETE    
    
-    # path('specialities/'),                  # POST, DELETE
-    # path('procedure/'),                     # POST, DELETE
 
-    
+
     # path('medical-center-statistics/'),     # GET
 
 ]   

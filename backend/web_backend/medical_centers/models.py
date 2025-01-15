@@ -18,7 +18,7 @@ class Procedure(models.Model):
     speciality = models.ForeignKey(Speciality, on_delete=models.CASCADE )
 
     def __str__(self):
-        return "f{self.name} - {self.speciality_code}"
+        return self.name
     
 class HealthInstitutions(models.Model):
     name = models.CharField(max_length=100, unique=True)
