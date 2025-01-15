@@ -184,6 +184,7 @@ class MedicalCenterDoctorsView(APIView):
             status=status.HTTP_200_OK
         )
 
+
 class MedicalCenterSpecialitiesView(APIView):
     def get(self, request):
         token = request.COOKIES.get("jwt")
@@ -217,5 +218,41 @@ class MedicalCenterSpecialitiesView(APIView):
         )
         return response
 
-    def delete(self, request):
-        pass
+
+class MedicalCenterSpecialityView(APIView):
+    
+    def get(self, request, pk):
+        token = request.COOKIES.get("jwt")
+        payload = isTokenValid(token)
+
+        user, medcent = getMedicalCenterByID(payload=payload)
+
+        speciality = medcent.specialities.filter(id= pk).first()
+
+        # Specialities verisini serialize et
+        serializer = MedicalCenterSpecialitySerializer(speciality, context= {"medcent":medcent})
+        return Response( serializer.data, status=status.HTTP_200_OK )
+    
+    def delete(self, request, pk):
+        token = request.COOKIES.get("jwt")
+        payload = isTokenValid(token=token)
+        user, medcent = getMedicalCenterByID(payload=payload)
+        
+        try: 
+            speciality = medcent.specialities.filter(id= pk).first()
+            name = speciality.name
+
+            procedures = medcent.procedures.filter(speciality=pk)
+            for procedure in procedures:
+                procedure.delete()
+            speciality.delete()
+
+            return Response(
+                    {"message": f"Speciality {name} and its procedures are successfully deleted."},
+                    status=status.HTTP_200_OK
+                )
+        except:
+            return Response(
+                        {"message": "not found"},
+                        status=status.HTTP_404_NOT_FOUND
+            )

@@ -11,8 +11,13 @@ urlpatterns = [
     # GET, DELETE, PATCH
     path('profile/doctors/<int:pk>/', MedicalCenterDoctorsView.as_view(), name="doctor-detail"),
     
-    path('profile/specialities/', MedicalCenterSpecialitiesView.as_view(), name="specialities"),                  # POST, DELETE
-    # path('procedure/'),                     # POST, DELETE
+    # GET, PUT, DELETE
+    path('profile/specialities/', MedicalCenterSpecialitiesView.as_view(), name="specialities"),                  
+    path('profile/specialities/<int:pk>', MedicalCenterSpecialityView.as_view(), name="speciality"),                  
+    
+    # DELETE
+    # path('profileprocedure/'),                    
+    # path('profileprocedure/'),                    
 
     # path('medical-center-photos/'),         # POST, DELETE
     # path('medical-center-videos/'),         # POST, DELETE    
