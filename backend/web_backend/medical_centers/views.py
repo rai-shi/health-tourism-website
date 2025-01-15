@@ -198,7 +198,24 @@ class MedicalCenterSpecialitiesView(APIView):
         return Response( serializer.data, status=status.HTTP_200_OK )
         # return Response( serializer.error, status=status.HTTP_404_NOT_FOUND )
     
-    def post(self, request):
-        pass
+    def put(self, request):
+        token = request.COOKIES.get("jwt")
+        payload = isTokenValid(token=token)
+        user, medcent = getMedicalCenterByID(payload=payload)
+
+        serializer = MedicalCenterSpecialityUpdateSerializer(medcent, data = request.data)
+        if serializer.is_valid():
+                serializer.save()
+        else:
+            return Response(serializer.errors, status=400)
+
+        response = Response(
+            {
+                "message": "Specialitites and procedures are successfully added.",
+            },
+            status=status.HTTP_200_OK
+        )
+        return response
+
     def delete(self, request):
         pass

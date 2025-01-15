@@ -43,6 +43,37 @@ class MedicalCenterSpecialitySerializer(serializers.ModelSerializer):
                 if procedure.speciality.id == obj.id
             ]
 
+class MedicalCenterSpecialityUpdateSerializer(serializers.ModelSerializer):
+    specialities = serializers.ListField(
+        child=serializers.IntegerField(), required=False
+    )
+    procedures = serializers.ListField(
+        child=serializers.IntegerField(), required=False
+    )
+
+    class Meta:
+        model = MedicalCenter
+        fields = ["specialities", "procedures"]
+
+    def update(self, instance, validated_data):
+        # Verilen verilerdeki specialities ve procedures'ı al
+        specialities_data = validated_data.pop("specialities", [])
+        procedures_data = validated_data.pop("procedures", [])
+
+        # Yeni verileri mevcut ilişkilere ekle
+        if specialities_data:
+            instance.specialities.add(*specialities_data)  # Mevcut specialities'a ekle
+
+        if procedures_data:
+            instance.procedures.add(*procedures_data)  # Mevcut procedures'a ekle
+
+        # Diğer verileri güncelle
+        for attr, value in validated_data.items():
+            setattr(instance, attr, value)
+
+        instance.save()
+        return instance
+
 
 class MedicalCenterSerializer(serializers.ModelSerializer):
     # custom serializer methods
@@ -111,7 +142,6 @@ class MedicalCenterSerializer(serializers.ModelSerializer):
             "city": dict(MedicalCenter.CITY_CHOICES).get(obj.city) 
         }
     
-
 class MedicalCenterUpdateSerializer(serializers.ModelSerializer):
     specialities = serializers.PrimaryKeyRelatedField(
         queryset=Speciality.objects.all(), 
