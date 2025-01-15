@@ -23,9 +23,12 @@ class MedicalCenterVideosSerializer(serializers.ModelSerializer):
         fields = ["video_name", "video_link", "uploaded_at"]
 
 class MedicalCenterSerializer(serializers.ModelSerializer):
+    # custom serializer methods
+    city = serializers.SerializerMethodField()
     specialities = serializers.SerializerMethodField()
     procedures = serializers.SerializerMethodField()
     contracted_health_institutions = serializers.SerializerMethodField()
+
     doctors = DoctorSerializer(many=True, read_only=True)  # related_name="doctors"
     medical_center_photos = MedicalCenterPhotosSerializer(many=True, read_only=True)  # related_name="medical_center_photos"
     medical_center_videos = MedicalCenterVideosSerializer(many=True, read_only=True)  # related_name="medical_center_videos"
@@ -62,6 +65,12 @@ class MedicalCenterSerializer(serializers.ModelSerializer):
     def get_contracted_health_institutions(self, obj):
         return [{"id":inst.id, "name":inst.name, "code": inst.code} for inst in obj.contracted_health_institutions.all()]
 
+    def get_city(self, obj):
+        return {
+            "city_code": obj.city, 
+            "city": dict(MedicalCenter.CITY_CHOICES).get(obj.city) 
+        }
+    
 class MedicalCenterUpdateSerializer(serializers.ModelSerializer):
     specialities = serializers.PrimaryKeyRelatedField(
         queryset=Speciality.objects.all(), 
