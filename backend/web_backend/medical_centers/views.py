@@ -185,16 +185,48 @@ class MedicalCenterDoctorsView(APIView):
         )
 
 
-class MedicalCenterSpecialitiesView(APIView):
-    def get(self, request):
-        token = request.COOKIES.get("jwt")
-        payload = isTokenValid(token)
+def DeleteSpeciality(medcent, specilality_pk):
+    try: 
+        speciality = medcent.specialities.filter(id= specilality_pk).first()
+        name = speciality.name
 
+        procedures = medcent.procedures.filter(speciality=specilality_pk)
+        for procedure in procedures:
+            procedure.delete()
+        speciality.delete()
+
+        return Response(
+                {"message": f"Speciality {name} and its procedures are successfully deleted."},
+                status=status.HTTP_200_OK
+            )
+    except:
+        return Response(
+                    {"message": "not found"},
+                    status=status.HTTP_404_NOT_FOUND
+        )
+    
+class MedicalCenterSpecialitiesView(APIView):
+    def get(self, request, pk=None):
+
+        token = request.COOKIES.get("jwt")
+        payload = isTokenValid(token=token)
         user, medcent = getMedicalCenterByID(payload=payload)
 
+        # if spesific speciality is requested
+        if pk is not None:
+            try:
+                speciality = medcent.specialities.filter(id= pk).first()
+            except:
+                return Response(
+                    {"message": "Speciality is not found!"},
+                    status=status.HTTP_404_NOT_FOUND
+                )
+            serializer = MedicalCenterSpecialitySerializer(speciality, context= {"medcent":medcent})
+            return Response( serializer.data, status=status.HTTP_200_OK )
+
+        # if speciality list requested
         specialities = medcent.specialities.all()
 
-        # Specialities verisini serialize et
         serializer = MedicalCenterSpecialitySerializer(specialities, many=True, context= {"medcent":medcent})
         return Response( serializer.data, status=status.HTTP_200_OK )
         # return Response( serializer.error, status=status.HTTP_404_NOT_FOUND )
@@ -217,42 +249,36 @@ class MedicalCenterSpecialitiesView(APIView):
             status=status.HTTP_200_OK
         )
         return response
-
-
-class MedicalCenterSpecialityView(APIView):
     
-    def get(self, request, pk):
-        token = request.COOKIES.get("jwt")
-        payload = isTokenValid(token)
-
-        user, medcent = getMedicalCenterByID(payload=payload)
-
-        speciality = medcent.specialities.filter(id= pk).first()
-
-        # Specialities verisini serialize et
-        serializer = MedicalCenterSpecialitySerializer(speciality, context= {"medcent":medcent})
-        return Response( serializer.data, status=status.HTTP_200_OK )
-    
-    def delete(self, request, pk):
+    def delete(self, request, pk=None):
         token = request.COOKIES.get("jwt")
         payload = isTokenValid(token=token)
         user, medcent = getMedicalCenterByID(payload=payload)
         
-        try: 
-            speciality = medcent.specialities.filter(id= pk).first()
-            name = speciality.name
-
-            procedures = medcent.procedures.filter(speciality=pk)
-            for procedure in procedures:
-                procedure.delete()
-            speciality.delete()
-
+        if pk is not None:
+            DeleteSpeciality(medcent=medcent, specilality_pk=pk)
+        
+        speciality_ids = request.data.get("ids", [])
+        if not speciality_ids:
             return Response(
-                    {"message": f"Speciality {name} and its procedures are successfully deleted."},
-                    status=status.HTTP_200_OK
-                )
-        except:
-            return Response(
-                        {"message": "not found"},
-                        status=status.HTTP_404_NOT_FOUND
+                {"message": "No IDs provided for deletion!"},
+                status=status.HTTP_400_BAD_REQUEST
             )
+
+        for id in speciality_ids:
+            DeleteSpeciality(medcent=medcent, specilality_pk=id)
+        return Response(
+            {"message": f"{len(speciality_ids)} speciality is successfully deleted."},
+            status=status.HTTP_200_OK
+        )
+
+# ! procedure deletion
+
+class MedicalCenterHealthInsurancesView(APIView):
+    def get(self, request, pk=None):
+        pass 
+    def put(self, request):
+        pass 
+    def delete(self, request, pk=None):
+        pass 
+

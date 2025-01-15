@@ -1,4 +1,4 @@
-register
+users/register for patient type
 {
     "first_name": "ayse",
     "last_name": "tak",
@@ -6,6 +6,7 @@ register
     "password": "930615Fly",
     "user_type": "patient"
 }
+users/register for medical center type
 {
     "first_name": "doktor",
     "last_name": "biri",
@@ -14,31 +15,30 @@ register
     "user_type": "medical-center"
 }
 
-login
+users/login
 {
  "email": "ayse1@gmail.com",
 "password": "930615Fly"
 }
-
 {
  "email" : "medical@gmail.com",
 "password" : "930615Fly"
 }
 
-change-password
+users/change-password
 {
 "old_password" : "930615Fly",
 "new_password1" : "591003Black",
 "new_password2" : "591003Black"
 }
 
-update-email
+users/update-email
 {
 "password" : "930615Fly",
 "new_email" : "biri@example.com"
 }
 
-update-personal-info 
+users/update-personal-info 
 {
     "gender": "w",
     "birthday": "2000-2-7",
@@ -47,7 +47,7 @@ update-personal-info
     "city": "Samsun"
 }
 
-medical-center information updating
+medical-center/profile PUT
 {
     "user": 10,
     "center_name": "Awesome Medical Center",
@@ -63,7 +63,19 @@ medical-center information updating
     "contracted_health_institutions": [1, 2, 3]
 }
 
-doctors creating
+medical-center/profile PATCH change some of these infos
+{
+    "center_name": "",
+    "center_type": "",
+    "city": "",
+    "contact_number": "",
+    "mail_address": "",
+    "web_site": "",
+    "preview_text": "",
+    "overview_text": ""
+}
+
+medical-center/doctors POST
 {
     "doctors" : [
     {
@@ -81,20 +93,36 @@ doctors creating
     }
 ]
 }
-one doctor record
+medical-centers/profile/doctors POST for one doctor record
 {
-"doctors" : [
-    {
+    "doctors" : [
+        {
+            "name" : "serhat",
+            "surname" : "koçer",
+            "title" : "Dr.",
+            "major" : "AT",
+            "minor" : "Anes"
+        }
+    ]
+}
+
+medical-centers/profile/doctors/<id> PATCH 
+{
         "name" : "serhat",
         "surname" : "koçer",
         "title" : "Dr.",
         "major" : "AT",
         "minor" : "Anes"
     }
-]
-}
 
-multiple doctor deletion
+medical-centers/profile/doctors/  multiple doctor deletion
 {
 "ids" : [2,3]
+}
+
+
+medical-centers/profile/specialities/ PUT
+{
+"specialities": [62],
+"procedures": [42,43]
 }

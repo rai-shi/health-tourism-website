@@ -13,17 +13,18 @@ urlpatterns = [
     
     # GET, PUT, DELETE
     path('profile/specialities/', MedicalCenterSpecialitiesView.as_view(), name="specialities"),                  
-    path('profile/specialities/<int:pk>', MedicalCenterSpecialityView.as_view(), name="speciality"),                  
-    
-    # DELETE
-    # path('profileprocedure/'),                    
-    # path('profileprocedure/'),                    
+    path('profile/specialities/<int:pk>', MedicalCenterSpecialitiesView.as_view(), name="speciality"), 
+
+
+    # GET, PUT, DELETE                 
+    path('profile/insurances/', MedicalCenterHealthInsurancesView.as_view(), name="insurances"),
+    # GET, DELETE                
+    path('profile/insurances/<int:pk>', MedicalCenterHealthInsurancesView.as_view(), name="insurance"),                  
+
+
 
     # path('medical-center-photos/'),         # POST, DELETE
     # path('medical-center-videos/'),         # POST, DELETE    
-   
-
-
     # path('medical-center-statistics/'),     # GET
 
 ]   
