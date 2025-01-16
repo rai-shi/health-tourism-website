@@ -18,13 +18,25 @@ class MedicalCenterPhotosSerializer(serializers.ModelSerializer):
         fields = ["image_name", "image", "uploaded_at"]
 
 class MedicalCenterVideosSerializer(serializers.ModelSerializer):
+    medical_center = serializers.PrimaryKeyRelatedField(queryset=MedicalCenter.objects.all())
     class Meta:
         model = MedicalCenterVideos
-        fields = ["video_name", "video_link", "uploaded_at"]
+        fields = '__all__'
+
+    # def update(self, instance, validated_data):
+    #     videos = validated_data.pop("videos", [])
+        
+    #     if videos:
+    #         instance.contracted_health_institutions.add(*videos)
+
+    #     for attr, value in validated_data.items():
+    #         setattr(instance, attr, value)
+
+    #     instance.save()
+    #     return instance
 
 
 class MedicalCenterSpecialitySerializer(serializers.ModelSerializer):
-    # procedures = serializers.SerializerMethodField('medical_center_procedures')
     procedures = serializers.SerializerMethodField()
     class Meta:
         model = Speciality
@@ -57,18 +69,15 @@ class MedicalCenterSpecialityUpdateSerializer(serializers.ModelSerializer):
         fields = ["specialities", "procedures"]
 
     def update(self, instance, validated_data):
-        # Verilen verilerdeki specialities ve procedures'ı al
         specialities_data = validated_data.pop("specialities", [])
         procedures_data = validated_data.pop("procedures", [])
 
-        # Yeni verileri mevcut ilişkilere ekle
         if specialities_data:
-            instance.specialities.add(*specialities_data)  # Mevcut specialities'a ekle
+            instance.specialities.add(*specialities_data)  
 
         if procedures_data:
-            instance.procedures.add(*procedures_data)  # Mevcut procedures'a ekle
+            instance.procedures.add(*procedures_data)  
 
-        # Diğer verileri güncelle
         for attr, value in validated_data.items():
             setattr(instance, attr, value)
 
@@ -79,6 +88,7 @@ class ProcedureSerializer(serializers.ModelSerializer):
     class Meta:
         model = Procedure
         fields = '__all__' 
+
 
 class HealthInstitutionsSerializer(serializers.ModelSerializer):
     class Meta:

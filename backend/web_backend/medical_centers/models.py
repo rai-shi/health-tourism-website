@@ -104,7 +104,7 @@ class Doctor(models.Model):
 
 class MedicalCenterPhotos(models.Model):
     medical_center  = models.ForeignKey(MedicalCenter, on_delete=models.CASCADE, related_name='medical_center_photos')
-    image_name      = models.CharField( max_length=100 )
+    image_name      = models.CharField( max_length=100, unique=True )
     image           = models.ImageField(upload_to='medical_center/photos/')
     uploaded_at     = models.DateTimeField(auto_now_add=True)
 
@@ -113,7 +113,7 @@ class MedicalCenterPhotos(models.Model):
 
 class MedicalCenterVideos(models.Model):
     medical_center  = models.ForeignKey(MedicalCenter, on_delete=models.CASCADE, related_name='medical_center_videos')
-    video_name      = models.CharField( max_length=100 )
+    video_name      = models.CharField( max_length=100, unique=True )
     video_link      = models.URLField(max_length=500)
     uploaded_at     = models.DateTimeField(auto_now_add=True)
 

@@ -355,7 +355,6 @@ class MedicalCenterHealthInsurancesView(APIView):
         response = Response(
             {
                 "message": "New health insurance contraction is successfully added.",
-                "data": serializer.data,
             },
             status=status.HTTP_200_OK
         )
@@ -398,3 +397,75 @@ class MedicalCenterHealthInsurancesView(APIView):
         )
 
 
+class MedicalCenterVideosView(APIView):
+    def get(self, request, pk=None):
+        token = request.COOKIES.get("jwt")
+        payload = isTokenValid(token=token)
+        user, medcent = getMedicalCenterByID(payload=payload)
+
+        try:
+            videos = MedicalCenterVideos.objects.filter(medical_center=medcent.id)
+        except:
+            return Response(
+                {"message": "Medical center videos are not found!"},
+                status=status.HTTP_404_NOT_FOUND
+            )
+        serializer = MedicalCenterVideosSerializer(videos, many=True) 
+        return Response( serializer.data, status=status.HTTP_200_OK )
+    
+    def post(self, request):
+        token = request.COOKIES.get("jwt")
+        payload = isTokenValid(token=token)
+        user, med_cent = getMedicalCenterByID(payload=payload)
+
+        videos = request.data.get("videos", [])
+        # {"videos": [{}, {}]}
+        for video in videos:
+            video['medical_center'] = med_cent.id
+
+            serializer = MedicalCenterVideosSerializer(data=video)
+            if serializer.is_valid():
+                serializer.save()
+            else:
+                return Response(serializer.errors, status=400)
+
+        response = Response(
+            {
+                "message": "Videos are successfully added.",
+            },
+            status=status.HTTP_200_OK
+        )
+        return response
+    
+    def delete(self, request, pk=None):
+        token = request.COOKIES.get("jwt")
+        isTokenValid(token=token)
+
+        if pk is not None:
+            try:
+                instance = MedicalCenterVideos.objects.get(id=pk)
+            except MedicalCenterVideos.DoesNotExist:
+                return Response(
+                    {"message": "Video is not found!"},
+                    status=status.HTTP_404_NOT_FOUND
+                )
+
+            video_name = instance.video_name
+            instance.delete()
+            return Response(
+                {"message": f"{video_name} is successfully deleted."},
+                status=status.HTTP_200_OK
+            )
+
+        video_ids = request.data.get("ids", [])
+        if not video_ids:
+            return Response(
+                {"message": "No IDs provided for deletion!"},
+                status=status.HTTP_400_BAD_REQUEST
+            )
+
+        deleted_count, _ = MedicalCenterVideos.objects.filter(id__in=video_ids).delete()
+        return Response(
+            {"message": f"{deleted_count} doctors successfully deleted."},
+            status=status.HTTP_200_OK
+        )

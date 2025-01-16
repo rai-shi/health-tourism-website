@@ -143,3 +143,17 @@ medical-centers/profile/insurances POST
 {
     "contracted_health_institutions": [4]
 }
+
+/medical-centers/profile/videos/ POST
+{
+    "videos": [
+                {
+                    "video_name" : "video-1.mp4",
+                    "video_link" : "https://www.youtube.com/watch?v=qrBWZ8ARD_s"
+                }, 
+                {
+                    "video_name" : "video-2.mp4",
+                    "video_link" : "https://www.youtube.com/watch?v=onu_L56p_80"
+                }
+            ]
+}

@@ -14,6 +14,7 @@ urlpatterns = [
     # GET, PUT, DELETE
     path('profile/specialities/', MedicalCenterSpecialitiesView.as_view(), name="specialities"),                  
     path('profile/specialities/<int:speciality_pk>', MedicalCenterSpecialitiesView.as_view(), name="speciality"), 
+    # GET, DELETE
     path('profile/specialities/<int:speciality_pk>/<int:procedure_pk>', MedicalCenterProceduresView.as_view(), name="procedure"), 
 
 
@@ -22,6 +23,10 @@ urlpatterns = [
     # DELETE                
     path('profile/insurances/<int:pk>', MedicalCenterHealthInsurancesView.as_view(), name="insurance"),                  
 
+    # GET, POST, DELETE
+    path('profile/videos/', MedicalCenterVideosView.as_view(), name="videos"),         
+    path('profile/videos/<int:pk>', MedicalCenterVideosView.as_view(), name="video"),         
+     
 
 
     # path('medical-center-photos/'),         # POST, DELETE
