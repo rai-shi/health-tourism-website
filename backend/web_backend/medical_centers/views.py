@@ -326,7 +326,7 @@ class MedicalCenterProceduresView(APIView):
 
 
 class MedicalCenterHealthInsurancesView(APIView):
-    def get(self, request):
+    def get(self, request, pk=None):
         token = request.COOKIES.get("jwt")
         payload = isTokenValid(token=token)
         user, medcent = getMedicalCenterByID(payload=payload)
@@ -362,5 +362,39 @@ class MedicalCenterHealthInsurancesView(APIView):
         return response
     
     def delete(self, request, pk=None):
-        pass 
+        token = request.COOKIES.get("jwt")
+        payload = isTokenValid(token=token)
+        user, medcent = getMedicalCenterByID(payload=payload)
+        
+        # spesific insurance will be deleted
+        if pk is not None:
+            try: 
+                insurance = medcent.contracted_health_institutions.get(id=pk)
+                name = insurance.name
+                insurance.delete()
+                return Response(
+                    {"message": f"Contracted Health Insurance {name} is successfully deleted."},
+                    status=status.HTTP_200_OK
+                )
+            except:
+                return Response(
+                            {"message": "not found"},
+                            status=status.HTTP_404_NOT_FOUND
+                )
+    
+        insurance_ids = request.data.get("ids", [])
+        if not insurance_ids:
+            return Response(
+                {"message": "No IDs provided for deletion!"},
+                status=status.HTTP_400_BAD_REQUEST
+            )
+
+        for id in insurance_ids:
+                insurance_instance = medcent.contracted_health_institutions.get(id=id)
+                insurance_instance.delete()
+        return Response(
+            {"message": f"{len(insurance_ids)} insurances are successfully deleted."},
+            status=status.HTTP_200_OK
+        )
+
 
