@@ -14,6 +14,13 @@ users/register for medical center type
     "password": "930615Fly",
     "user_type": "medical-center"
 }
+{
+    "first_name": "felix",
+    "last_name": "dupain",
+    "email": "hospital@gmail.com",
+    "password": "930615Fly",
+    "user_type": "medical-center"
+}
 
 users/login
 {
@@ -22,6 +29,10 @@ users/login
 }
 {
  "email" : "medical@gmail.com",
+"password" : "930615Fly"
+}
+{
+ "email" : "hospital@gmail.com",
 "password" : "930615Fly"
 }
 

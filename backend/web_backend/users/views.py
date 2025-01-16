@@ -7,6 +7,9 @@ from rest_framework.exceptions import AuthenticationFailed, ValidationError
 from rest_framework import status
 from rest_framework_simplejwt.tokens import RefreshToken
 
+from drf_yasg import openapi
+from drf_yasg.utils import swagger_auto_schema
+
 from django.core.validators import EmailValidator
 from django.core.exceptions import ValidationError as DjangoValidationError
 
@@ -103,6 +106,36 @@ class RegisterView(APIView):
 
     
 class LoginView(APIView):
+    @swagger_auto_schema(
+        operation_description="User login",
+        request_body=openapi.Schema(
+            type=openapi.TYPE_OBJECT,
+            properties={
+                'email': openapi.Schema(type=openapi.TYPE_STRING, description='User email'),
+                'password': openapi.Schema(type=openapi.TYPE_STRING, description='User password')
+            },
+            required=['email', 'password']
+        ),
+        responses={
+            200: openapi.Response(
+                description="Login successful, JWT returned",
+                examples={
+                    'application/json': {
+                        'jwt': 'your_jwt_token_here'
+                    }
+                }
+            ),
+            400: openapi.Response(
+                description="Invalid credentials",
+                examples={
+                    'application/json': {
+                        'detail': 'Invalid credentials'
+                    }
+                }
+            )
+        }
+    )
+    
     def post(self, request):
         email = request.data["email"]
         password = request.data["password"]

@@ -45,6 +45,39 @@ class PatientView(APIView):
             "patient":patient_serializer.data   
         }
         return Response(response)
+    # def post(self, request):
+
+    #     token       = request.COOKIES.get("jwt")
+    #     payload     = isTokenValid(token=token)
+
+    #     user, patient = getPatientByID(payload=payload)
+
+    #     # get the personal data
+    #     gender          = request.data.get("gender")
+    #     birthday        = request.data.get("birthday")
+    #     phone_number    = request.data.get("phone_number")
+    #     country         = request.data.get("country")
+    #     city            = request.data.get("city")
+
+    #     city_object = City.objects.filter(name=city).first()
+    #     # country kodu geldiğini varsayıyorum, Turkey : TR
+    #     country_object = Country.objects.filter(code2=country).first()
+
+    #     patient.gender          = gender
+    #     patient.birthday        = birthday
+    #     patient.phone_number    = phone_number
+    #     patient.country         = country_object
+    #     patient.city            = city_object
+
+    #     patient.save()
+
+    #     response = Response(
+    #         {
+    #             "message": "Personal information is successfully updated.",
+    #         },
+    #         status=status.HTTP_200_OK
+    #     )
+    #     return response
     
 # POST
 class UpdatePersonalInfoView(APIView):

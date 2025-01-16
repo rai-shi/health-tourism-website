@@ -17,7 +17,6 @@ urlpatterns = [
     # GET, DELETE
     path('profile/specialities/<int:speciality_pk>/<int:procedure_pk>', MedicalCenterProceduresView.as_view(), name="procedure"), 
 
-
     # GET, PUT, DELETE                 
     path('profile/insurances/', MedicalCenterHealthInsurancesView.as_view(), name="insurances"),
     # DELETE                
@@ -27,12 +26,10 @@ urlpatterns = [
     path('profile/videos/', MedicalCenterVideosView.as_view(), name="videos"),         
     path('profile/videos/<int:pk>', MedicalCenterVideosView.as_view(), name="video"),    
 
-    
     # GET, POST, DELETE
     path('profile/photos/', MedicalCenterPhotosView.as_view(), name="videos"),         
     path('profile/photos/<int:pk>', MedicalCenterPhotosView.as_view(), name="video"),         
      
   
     # path('medical-center-statistics/'),     # GET
-
 ]   
