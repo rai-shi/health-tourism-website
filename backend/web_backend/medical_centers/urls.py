@@ -13,7 +13,8 @@ urlpatterns = [
     
     # GET, PUT, DELETE
     path('profile/specialities/', MedicalCenterSpecialitiesView.as_view(), name="specialities"),                  
-    path('profile/specialities/<int:pk>', MedicalCenterSpecialitiesView.as_view(), name="speciality"), 
+    path('profile/specialities/<int:speciality_pk>', MedicalCenterSpecialitiesView.as_view(), name="speciality"), 
+    path('profile/specialities/<int:speciality_pk>/<int:procedure_pk>', MedicalCenterProceduresView.as_view(), name="procedure"), 
 
 
     # GET, PUT, DELETE                 
