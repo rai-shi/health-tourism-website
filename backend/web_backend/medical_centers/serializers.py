@@ -13,27 +13,20 @@ class DoctorSerializer(serializers.ModelSerializer):
 
 
 class MedicalCenterPhotosSerializer(serializers.ModelSerializer):
+    medical_center = serializers.PrimaryKeyRelatedField(queryset=MedicalCenter.objects.all(), write_only=True)
+
     class Meta:
         model = MedicalCenterPhotos
-        fields = ["image_name", "image", "uploaded_at"]
+        fields = ['id', 'medical_center', 'image_name', 'image', 'uploaded_at']
 
 class MedicalCenterVideosSerializer(serializers.ModelSerializer):
-    medical_center = serializers.PrimaryKeyRelatedField(queryset=MedicalCenter.objects.all())
+    medical_center = serializers.PrimaryKeyRelatedField(queryset=MedicalCenter.objects.all(), write_only=True)
+
     class Meta:
         model = MedicalCenterVideos
-        fields = '__all__'
+        # fields = '__all__'
+        fields = ['id', 'medical_center', 'video_name', 'video_link', 'uploaded_at']
 
-    # def update(self, instance, validated_data):
-    #     videos = validated_data.pop("videos", [])
-        
-    #     if videos:
-    #         instance.contracted_health_institutions.add(*videos)
-
-    #     for attr, value in validated_data.items():
-    #         setattr(instance, attr, value)
-
-    #     instance.save()
-    #     return instance
 
 
 class MedicalCenterSpecialitySerializer(serializers.ModelSerializer):

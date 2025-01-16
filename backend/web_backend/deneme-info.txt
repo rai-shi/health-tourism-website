@@ -157,3 +157,13 @@ medical-centers/profile/insurances POST
                 }
             ]
 }
+
+/medical-centers/profile/photos/ POST
+must be tested on postman
+
+on postman
+send POST request to http://127.0.0.1:8000/api/token/ with medical center login data given above.
+other http request methods authorization type should be Bearer token 
+here paste the access_token which is given in the api/token to Token. 
+then you free to send request any medical center prefix urls
+

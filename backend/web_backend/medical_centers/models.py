@@ -4,6 +4,9 @@ from users.models import User
 from phonenumber_field.modelfields import PhoneNumberField
 from markdownx.models import MarkdownxField
 
+import os
+from uuid import uuid4
+
 
 class Speciality(models.Model):
     name = models.CharField(max_length=100, unique=True)
@@ -102,15 +105,6 @@ class Doctor(models.Model):
     def __str__(self):
         return f"{self.title} {self.name} {self.surname}"
 
-class MedicalCenterPhotos(models.Model):
-    medical_center  = models.ForeignKey(MedicalCenter, on_delete=models.CASCADE, related_name='medical_center_photos')
-    image_name      = models.CharField( max_length=100, unique=True )
-    image           = models.ImageField(upload_to='medical_center/photos/')
-    uploaded_at     = models.DateTimeField(auto_now_add=True)
-
-    def __str__(self):
-        return self.image_name
-
 class MedicalCenterVideos(models.Model):
     medical_center  = models.ForeignKey(MedicalCenter, on_delete=models.CASCADE, related_name='medical_center_videos')
     video_name      = models.CharField( max_length=100, unique=True )
@@ -119,3 +113,21 @@ class MedicalCenterVideos(models.Model):
 
     def __str__(self):
         return self.video_name
+    
+
+def medical_center_photo_upload_path(instance, filename):
+    extension = os.path.splitext(filename)[1]
+    new_filename = f"{uuid4()}{extension}"
+    return f"medical_center/{instance.medical_center.id}/photos/{new_filename}"
+
+
+class MedicalCenterPhotos(models.Model):
+    medical_center = models.ForeignKey(
+        MedicalCenter, on_delete=models.CASCADE, related_name='medical_center_photos'
+    )
+    image_name = models.CharField(max_length=100, unique=True)
+    image = models.ImageField(upload_to=medical_center_photo_upload_path)
+    uploaded_at = models.DateTimeField(auto_now_add=True)
+
+    def __str__(self):
+        return self.image_name

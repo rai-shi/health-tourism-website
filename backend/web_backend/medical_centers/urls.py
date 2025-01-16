@@ -25,12 +25,14 @@ urlpatterns = [
 
     # GET, POST, DELETE
     path('profile/videos/', MedicalCenterVideosView.as_view(), name="videos"),         
-    path('profile/videos/<int:pk>', MedicalCenterVideosView.as_view(), name="video"),         
+    path('profile/videos/<int:pk>', MedicalCenterVideosView.as_view(), name="video"),    
+
+    
+    # GET, POST, DELETE
+    path('profile/photos/', MedicalCenterPhotosView.as_view(), name="videos"),         
+    path('profile/photos/<int:pk>', MedicalCenterPhotosView.as_view(), name="video"),         
      
-
-
-    # path('medical-center-photos/'),         # POST, DELETE
-    # path('medical-center-videos/'),         # POST, DELETE    
+  
     # path('medical-center-statistics/'),     # GET
 
 ]   

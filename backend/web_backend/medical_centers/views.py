@@ -469,3 +469,162 @@ class MedicalCenterVideosView(APIView):
             {"message": f"{deleted_count} doctors successfully deleted."},
             status=status.HTTP_200_OK
         )
+
+
+class MedicalCenterVideosView(APIView):
+    def get(self, request, pk=None):
+        token = request.COOKIES.get("jwt")
+        payload = isTokenValid(token=token)
+        user, medcent = getMedicalCenterByID(payload=payload)
+
+        try:
+            videos = MedicalCenterVideos.objects.filter(medical_center=medcent.id)
+        except:
+            return Response(
+                {"message": "Medical center videos are not found!"},
+                status=status.HTTP_404_NOT_FOUND
+            )
+        serializer = MedicalCenterVideosSerializer(videos, many=True) 
+        return Response( serializer.data, status=status.HTTP_200_OK )
+    
+    def post(self, request):
+        token = request.COOKIES.get("jwt")
+        payload = isTokenValid(token=token)
+        user, med_cent = getMedicalCenterByID(payload=payload)
+
+        videos = request.data.get("videos", [])
+        # {"videos": [{}, {}]}
+        for video in videos:
+            video['medical_center'] = med_cent.id
+
+            serializer = MedicalCenterVideosSerializer(data=video)
+            if serializer.is_valid():
+                serializer.save()
+            else:
+                return Response(serializer.errors, status=400)
+
+        response = Response(
+            {
+                "message": "Videos are successfully added.",
+            },
+            status=status.HTTP_200_OK
+        )
+        return response
+    
+    def delete(self, request, pk=None):
+        token = request.COOKIES.get("jwt")
+        isTokenValid(token=token)
+
+        if pk is not None:
+            try:
+                instance = MedicalCenterVideos.objects.get(id=pk)
+            except MedicalCenterVideos.DoesNotExist:
+                return Response(
+                    {"message": "Video is not found!"},
+                    status=status.HTTP_404_NOT_FOUND
+                )
+
+            video_name = instance.video_name
+            instance.delete()
+            return Response(
+                {"message": f"{video_name} is successfully deleted."},
+                status=status.HTTP_200_OK
+            )
+
+        video_ids = request.data.get("ids", [])
+        if not video_ids:
+            return Response(
+                {"message": "No IDs provided for deletion!"},
+                status=status.HTTP_400_BAD_REQUEST
+            )
+
+        deleted_count, _ = MedicalCenterVideos.objects.filter(id__in=video_ids).delete()
+        return Response(
+            {"message": f"{deleted_count} doctors successfully deleted."},
+            status=status.HTTP_200_OK
+        )
+
+
+class MedicalCenterPhotosView(APIView):
+    def get(self, request, pk=None):
+        token = request.COOKIES.get("jwt")
+        payload = isTokenValid(token=token)
+        user, medcent = getMedicalCenterByID(payload=payload)
+
+        try:
+            photos = MedicalCenterPhotos.objects.filter(medical_center=medcent.id)
+        except:
+            return Response(
+                {"message": "Medical center photos are not found!"},
+                status=status.HTTP_404_NOT_FOUND
+            )
+        serializer = MedicalCenterPhotosSerializer(photos, many=True) 
+        return Response( serializer.data, status=status.HTTP_200_OK )
+    
+    def post(self, request):
+        token = request.COOKIES.get("jwt")
+        payload = isTokenValid(token=token)
+        user, med_cent = getMedicalCenterByID(payload=payload)
+
+        photos = request.FILES.getlist('photos', [])  
+        errors = []
+
+        for photo in photos:
+            photo_data = {
+                'medical_center': med_cent.id,
+                'image_name': photo.name,  
+                'image': photo, 
+            }
+            serializer = MedicalCenterPhotosSerializer(data=photo_data)
+
+            if serializer.is_valid():
+                serializer.save()
+            else:
+                errors.append({"photo": photo, "errors": serializer.errors})
+
+        if errors:
+            return Response({"errors": errors}, status=400)
+
+        return Response(
+            {"message": "Photos are successfully added."},
+            status=status.HTTP_200_OK
+        )
+    
+    
+    def delete(self, request, pk):
+
+        token = request.COOKIES.get("jwt")
+        isTokenValid(token=token)
+
+        if pk is not None:
+            try:
+                photo = MedicalCenterPhotos.objects.get(id=pk)
+            except MedicalCenterVideos.DoesNotExist:
+                return Response(
+                    {"message": "Video is not found!"},
+                    status=status.HTTP_404_NOT_FOUND
+                )
+            if photo.image:
+                file_path = photo.image.path
+                if os.path.exists(file_path):
+                    os.remove(file_path)  
+                image_name = photo.image_name
+                photo.delete()
+
+            return Response(
+                {"message": f"Image {image_name} is successfully deleted."},
+                status=status.HTTP_200_OK
+            )
+
+        image_ids = request.data.get("ids", [])
+        if not image_ids:
+            return Response(
+                {"message": "No IDs provided for deletion!"},
+                status=status.HTTP_400_BAD_REQUEST
+            )
+
+        deleted_count, _ = MedicalCenterPhotos.objects.filter(id__in=image_ids).delete()
+        return Response(
+            {"message": f"{deleted_count} doctors successfully deleted."},
+            status=status.HTTP_200_OK
+        )
