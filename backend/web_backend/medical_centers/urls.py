@@ -19,7 +19,7 @@ urlpatterns = [
 
     # GET, PUT, DELETE                 
     path('profile/insurances/', MedicalCenterHealthInsurancesView.as_view(), name="insurances"),
-    # GET, DELETE                
+    # DELETE                
     path('profile/insurances/<int:pk>', MedicalCenterHealthInsurancesView.as_view(), name="insurance"),                  
 
 

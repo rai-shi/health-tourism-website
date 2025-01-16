@@ -121,8 +121,25 @@ medical-centers/profile/doctors/  multiple doctor deletion
 }
 
 
-medical-centers/profile/specialities/ PUT
+medical-centers/profile/specialities/ POST
+speciality and procedure adding 
 {
 "specialities": [62],
 "procedures": [42,43]
+}
+
+only procedure adding
+{
+"procedures": [31]
+}
+
+only speciality adding
+{
+"specialities": [63]
+}
+
+
+medical-centers/profile/insurances POST
+{
+    "contracted_health_institutions": [4]
 }

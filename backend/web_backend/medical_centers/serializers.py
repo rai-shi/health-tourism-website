@@ -31,6 +31,7 @@ class MedicalCenterSpecialitySerializer(serializers.ModelSerializer):
         fields = ['id', 'name', 'code', 'procedures'] 
 
     def get_procedures(self, obj):
+        # obj = speciality object
         medcent = self.context.get("medcent")
         return [
                 {
@@ -74,10 +75,33 @@ class MedicalCenterSpecialityUpdateSerializer(serializers.ModelSerializer):
         instance.save()
         return instance
 
-class MedicalCenterProcedureSerializer(serializers.ModelSerializer):
+class ProcedureSerializer(serializers.ModelSerializer):
     class Meta:
         model = Procedure
         fields = '__all__' 
+
+class HealthInstitutionsSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = HealthInstitutions
+        fields = '__all__' 
+
+class MedicalCenterHealthInstitutionsUpdateSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = MedicalCenter
+        fields = ["contracted_health_institutions"]
+
+    def update(self, instance, validated_data):
+        insurances = validated_data.pop("contracted_health_institutions", [])
+        
+        if insurances:
+            instance.contracted_health_institutions.add(*insurances)
+
+        for attr, value in validated_data.items():
+            setattr(instance, attr, value)
+
+        instance.save()
+        return instance
+
 
 class MedicalCenterSerializer(serializers.ModelSerializer):
     # custom serializer methods

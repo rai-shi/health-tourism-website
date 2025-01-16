@@ -227,7 +227,7 @@ class MedicalCenterSpecialitiesView(APIView):
         return Response( serializer.data, status=status.HTTP_200_OK )
         # return Response( serializer.error, status=status.HTTP_404_NOT_FOUND )
     
-    def put(self, request):
+    def post(self, request):
         token = request.COOKIES.get("jwt")
         payload = isTokenValid(token=token)
         user, medcent = getMedicalCenterByID(payload=payload)
@@ -295,7 +295,7 @@ class MedicalCenterProceduresView(APIView):
                 {"message": "Procedure is not found!"},
                 status=status.HTTP_404_NOT_FOUND
             )
-        serializer = MedicalCenterProcedureSerializer(procedure) # context= {"medcent":medcent}
+        serializer = ProcedureSerializer(procedure) # context= {"medcent":medcent}
         return Response( serializer.data, status=status.HTTP_200_OK )
 
     def delete(self, request, speciality_pk, procedure_pk=None):
@@ -326,10 +326,41 @@ class MedicalCenterProceduresView(APIView):
 
 
 class MedicalCenterHealthInsurancesView(APIView):
-    def get(self, request, pk=None):
-        pass 
-    def put(self, request):
-        pass 
+    def get(self, request):
+        token = request.COOKIES.get("jwt")
+        payload = isTokenValid(token=token)
+        user, medcent = getMedicalCenterByID(payload=payload)
+
+        try:
+            incurances = medcent.contracted_health_institutions.all()
+        except:
+            return Response(
+                {"message": "Contracted Health Insurences are not found!"},
+                status=status.HTTP_404_NOT_FOUND
+            )
+        serializer = HealthInstitutionsSerializer(incurances, many=True) 
+        return Response( serializer.data, status=status.HTTP_200_OK )
+
+    def post(self, request):
+        token = request.COOKIES.get("jwt")
+        payload = isTokenValid(token=token)
+        user, medcent = getMedicalCenterByID(payload=payload)
+
+        serializer = MedicalCenterHealthInstitutionsUpdateSerializer(medcent, data = request.data)
+        if serializer.is_valid():
+                serializer.save()
+        else:
+            return Response(serializer.errors, status=400)
+
+        response = Response(
+            {
+                "message": "New health insurance contraction is successfully added.",
+                "data": serializer.data,
+            },
+            status=status.HTTP_200_OK
+        )
+        return response
+    
     def delete(self, request, pk=None):
         pass 
 
