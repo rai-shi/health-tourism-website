@@ -34,6 +34,7 @@ django manage.py cities-light
 python manage.py import_specialities
 python manage.py import_procedure
 python manage.py import_health_institutions
+python manage.py import_destinations
 ```
 
 * Finally you can run the server

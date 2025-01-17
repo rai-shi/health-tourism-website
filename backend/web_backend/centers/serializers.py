@@ -5,6 +5,8 @@ from django.shortcuts import get_object_or_404
 from medical_centers.models import MedicalCenter
 
 class MedicalCenterListSerializer(serializers.ModelSerializer):
+    # custom serializer methods
+    city = serializers.SerializerMethodField()
     class Meta:
         model = MedicalCenter
         fields = [
@@ -17,3 +19,8 @@ class MedicalCenterListSerializer(serializers.ModelSerializer):
             "web_site",
             "preview_text"
         ]
+    def get_city(self, obj):
+        return {
+            "id" : obj.city.id,
+            "city": obj.city.name
+        }

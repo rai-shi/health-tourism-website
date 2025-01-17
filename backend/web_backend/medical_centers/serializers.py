@@ -165,8 +165,8 @@ class MedicalCenterSerializer(serializers.ModelSerializer):
 
     def get_city(self, obj):
         return {
-            "city_code": obj.city, 
-            "city": dict(MedicalCenter.CITY_CHOICES).get(obj.city) 
+            "id" : obj.city.id,
+            "city": obj.city.name
         }
     
 class MedicalCenterUpdateSerializer(serializers.ModelSerializer):

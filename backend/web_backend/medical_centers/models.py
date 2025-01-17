@@ -1,5 +1,6 @@
 from django.db import models
 from users.models import User
+from destinations.models import Destination
 
 from phonenumber_field.modelfields import PhoneNumberField
 from markdownx.models import MarkdownxField
@@ -45,28 +46,28 @@ class MedicalCenter(models.Model):
     ("ChildCent", "Children's Hospital"),
     ]
 
-    CITY_CHOICES = [
-        ("IST", "İSTANBUL"),
-        ("ANK", "ANKARA"),
-        ("IZ", "İZMİR"),
-        ("SM", "SAMSUN"),
-        ("BRS", "BURSA"),
-        ("TRZ", "TRABZON"),
-        ("MER", "MERSİN"),
-        ("ADA", "ADANA"),
-        ("HAT", "HATAY"),
-        ("KON", "KONYA"),
-        ("KRM", "KARAMAN"),
-        ("GAZ", "GAZİANTEP"),
-        ("KCE", "KOCAELİ"),
-        ("AYD", "AYDIN"),
-        ("ERZ", "ERZURUM"),
-    ]
+    # CITY_CHOICES = [
+    #     ("IST", "İSTANBUL"),
+    #     ("ANK", "ANKARA"),
+    #     ("IZ", "İZMİR"),
+    #     ("SM", "SAMSUN"),
+    #     ("BRS", "BURSA"),
+    #     ("TRZ", "TRABZON"),
+    #     ("MER", "MERSİN"),
+    #     ("ADA", "ADANA"),
+    #     ("HAT", "HATAY"),
+    #     ("KON", "KONYA"),
+    #     ("KRM", "KARAMAN"),
+    #     ("GAZ", "GAZİANTEP"),
+    #     ("KCE", "KOCAELİ"),
+    #     ("AYD", "AYDIN"),
+    #     ("ERZ", "ERZURUM"),
+    # ]
     # one to one relation with base User model
     user            = models.OneToOneField(User, on_delete=models.CASCADE, related_name="medical_center")
     center_name     = models.CharField( max_length=200, null=True )
     center_type     = models.CharField(max_length=15, choices=CENTER_CHOICES, default="Hosp", null=True )
-    city            = models.CharField(max_length=3, choices=CITY_CHOICES, default="IST", null=True  )
+    # city            = models.CharField(max_length=3, choices=CITY_CHOICES, default="IST", null=True  )
     contact_number  = PhoneNumberField( null=True )
     mail_address    = models.EmailField( max_length=100, null=True )
     web_site        = models.URLField( null=True )
@@ -76,6 +77,7 @@ class MedicalCenter(models.Model):
     # bu metin içinde kullanılan teknolojiler, akreditasyon belgeleri, sağlık turizmi belgeleri tanımlanması sağlansın
     overview_text   = MarkdownxField( null=True )
 
+    city                            = models.ForeignKey(Destination, default=1, on_delete=models.CASCADE, related_name='medical_centers_city')
     specialities                    = models.ManyToManyField(Speciality, related_name="medical_centers_specialities" )
     procedures                      = models.ManyToManyField(Procedure, related_name="medical_centers_procedure" )
     contracted_health_institutions  = models.ManyToManyField(HealthInstitutions, related_name="medical_centers_health_inst" )
