@@ -120,7 +120,7 @@ class MedicalCenterSerializer(serializers.ModelSerializer):
     class Meta:
         model = MedicalCenter
         fields = [
-            "user",
+            "id",
             "center_name",
             "center_type",
             "city",
@@ -136,10 +136,6 @@ class MedicalCenterSerializer(serializers.ModelSerializer):
             "medical_center_photos",            # One-to-many ilişki
             "medical_center_videos",            # One-to-many ilişki
         ]
-        extra_kwargs = {
-            "user": {"read_only": True},
-        }
-    
     def get_procedures(self, obj, id):
         return [
                 {
