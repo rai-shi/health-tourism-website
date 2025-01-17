@@ -7,6 +7,7 @@ from rest_framework.exceptions import AuthenticationFailed, ValidationError
 from rest_framework import status
 from rest_framework_simplejwt.tokens import RefreshToken
 
+# swagger documentation libs
 from drf_yasg import openapi
 from drf_yasg.utils import swagger_auto_schema
 

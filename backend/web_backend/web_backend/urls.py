@@ -43,7 +43,10 @@ urlpatterns = [
 
     path('users/',include("users.urls")),
     path('patient/',include("patient.urls")),
-    path('medical-centers/',include("medical_centers.urls")),
+    path('medical-center/',include("medical_centers.urls")),
+    path('medical-centers/',include("centers.urls")),
+    path('destinations/',include("destinations.urls")),
+    path('specialities/',include("specialities.urls")),
 
     path('docs/', schema_view.with_ui('swagger', cache_timeout=0),name='schema-swagger-ui'),
 ]

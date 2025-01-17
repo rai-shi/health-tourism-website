@@ -191,32 +191,3 @@ class MedicalCenterUpdateSerializer(serializers.ModelSerializer):
             "preview_text", "overview_text", 
             "specialities", "procedures", "contracted_health_institutions"
         ]
-
-
-
-
-
-
-
-
-
-
-# from rest_framework import serializers
-# from .models import Speciality, Procedure
-
-# class ProcedureSerializer(serializers.ModelSerializer):
-#     class Meta:
-#         model = Procedure
-#         fields = ['id', 'name', 'code']  # Gerekli alanları ekleyin
-
-# class SpecialitySerializer(serializers.ModelSerializer):
-#     procedures = serializers.SerializerMethodField()
-
-#     class Meta:
-#         model = Speciality
-#         fields = ['id', 'name', 'code', 'procedures']  # İlişkili prosedürler dahil
-
-#     def get_procedures(self, obj):
-#         # İlgili Speciality'ye bağlı Procedures
-#         procedures = Procedure.objects.filter(speciality=obj)
-#         return ProcedureSerializer(procedures, many=True).data

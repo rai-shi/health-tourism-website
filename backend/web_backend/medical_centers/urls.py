@@ -12,10 +12,10 @@ urlpatterns = [
     path('profile/doctors/<int:pk>/', MedicalCenterDoctorsView.as_view(), name="doctor-detail"),
     
     # GET, PUT, DELETE
-    path('profile/specialities/', MedicalCenterSpecialitiesView.as_view(), name="specialities"),                  
-    path('profile/specialities/<int:speciality_pk>', MedicalCenterSpecialitiesView.as_view(), name="speciality"), 
+    path('profile/specialities/', MedicalCenterSpecialitiesView.as_view(), name="medcent-specialities"),                  
+    path('profile/specialities/<int:speciality_pk>', MedicalCenterSpecialitiesView.as_view(), name="medcent-speciality"), 
     # GET, DELETE
-    path('profile/specialities/<int:speciality_pk>/<int:procedure_pk>', MedicalCenterProceduresView.as_view(), name="procedure"), 
+    path('profile/specialities/<int:speciality_pk>/<int:procedure_pk>', MedicalCenterProceduresView.as_view(), name="medcent-procedure"), 
 
     # GET, PUT, DELETE                 
     path('profile/insurances/', MedicalCenterHealthInsurancesView.as_view(), name="insurances"),

@@ -49,6 +49,9 @@ INSTALLED_APPS = [
     'users',
     'patient',
     'medical_centers',
+    'centers',
+    'specialities',
+    'destinations',
 
     # api packages
     'rest_framework',
