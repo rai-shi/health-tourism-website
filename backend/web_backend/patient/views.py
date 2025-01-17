@@ -117,7 +117,18 @@ class UpdatePersonalInfoView(APIView):
 
 
 # POST
-def RequestToMedicalCenter(self, request):
-    pass
+class RequestToMedicalCenterView(APIView):
+    def post(self, request):
+        token       = request.COOKIES.get("jwt")
+        payload     = isTokenValid(token=token)
+
+        user, patient = getPatientByID(payload=payload)
+        response = Response(
+                {
+                    "message": "Succesfulll.",
+                },
+                status=status.HTTP_200_OK
+            )
+        return response
 
 

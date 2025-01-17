@@ -7,6 +7,7 @@ from rest_framework.exceptions import AuthenticationFailed, ValidationError
 from rest_framework import status
 
 from users.views import *
+from patient.views import *
 from medical_centers.serializers import *
 from specialities.serializers import SpecialitySerializer
 from .serializers import *
@@ -53,6 +54,23 @@ class MedicalCentersView(APIView):
         print("hey")
         return response
     
+    def post(self, request, id=None):
+        token       = request.COOKIES.get("jwt")
+        payload     = isTokenValid(token=token)
+
+        user, patient = getPatientByID(payload=payload)
+
+        if patient:
+            new_url = f"/patient/medical-center-request"
+            return redirect(new_url)
+        else:
+            response = Response(
+                {
+                    "message": "Need to be patient profile!",
+                },
+                status=status.HTTP_401_UNAUTHORIZED
+            )
+            return response
 
 
 class SpecialityBasedFilteredMedicalCentersView(APIView):

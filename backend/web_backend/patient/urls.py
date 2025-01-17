@@ -11,8 +11,8 @@ urlpatterns = [
         UpdatePersonalInfoView.as_view(), 
         name="update-personal-info"),
 
-    # path("medical-center-request", 
-    #     views, 
-    #     name="medical-center-request")
+    path("medical-center-request", 
+        RequestToMedicalCenterView.as_view(), 
+        name="medical-center-request")
     
 ]   

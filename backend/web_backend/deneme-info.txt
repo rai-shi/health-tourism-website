@@ -183,8 +183,9 @@ then you free to send request any medical center prefix urls
 /specialities/<int:speciality_id>/<int:procedure_id> GET 
 http://127.0.0.1:8000/specialities?speciality=Cancer Treatment
 
+
 /medical-centers/? query for filtering GET
-http://127.0.0.1:8000/medical-centers/filter/?center_type=Clin
+http://127.0.0.1:8000/medical-centers/filter/?center_location=1
 http://127.0.0.1:8000/medical-centers/filter/?center_type=Hosp
 http://127.0.0.1:8000/medical-centers/filter/?procedure=43
 http://127.0.0.1:8000/medical-centers/filter/?speciality=60
