@@ -104,7 +104,7 @@ medical-center/doctors POST
     }
 ]
 }
-medical-centers/profile/doctors POST for one doctor record
+medical-center/profile/doctors POST for one doctor record
 {
     "doctors" : [
         {
@@ -117,7 +117,7 @@ medical-centers/profile/doctors POST for one doctor record
     ]
 }
 
-medical-centers/profile/doctors/<id> PATCH 
+medical-center/profile/doctors/<id> PATCH 
 {
         "name" : "serhat",
         "surname" : "koçer",
@@ -126,13 +126,13 @@ medical-centers/profile/doctors/<id> PATCH
         "minor" : "Anes"
     }
 
-medical-centers/profile/doctors/  multiple doctor deletion
+medical-center/profile/doctors/  multiple doctor deletion
 {
 "ids" : [2,3]
 }
 
 
-medical-centers/profile/specialities/ POST
+medical-center/profile/specialities/ POST
 speciality and procedure adding 
 {
 "specialities": [62],
@@ -150,12 +150,12 @@ only speciality adding
 }
 
 
-medical-centers/profile/insurances POST
+medical-center/profile/insurances POST
 {
     "contracted_health_institutions": [4]
 }
 
-/medical-centers/profile/videos/ POST
+/medical-center/profile/videos/ POST
 {
     "videos": [
                 {
@@ -169,7 +169,7 @@ medical-centers/profile/insurances POST
             ]
 }
 
-/medical-centers/profile/photos/ POST
+/medical-center/profile/photos/ POST
 must be tested on postman
 
 on postman
@@ -177,4 +177,19 @@ send POST request to http://127.0.0.1:8000/api/token/ with medical center login 
 other http request methods authorization type should be Bearer token 
 here paste the access_token which is given in the api/token to Token. 
 then you free to send request any medical center prefix urls
+
+
+
+/specialities/<int:speciality_id>/<int:procedure_id> GET 
+http://127.0.0.1:8000/specialities?speciality=Cancer Treatment
+
+/medical-centers/? query for filtering GET
+http://127.0.0.1:8000/medical-centers/filter/?center_type=Clin
+http://127.0.0.1:8000/medical-centers/filter/?center_type=Hosp
+http://127.0.0.1:8000/medical-centers/filter/?procedure=43
+http://127.0.0.1:8000/medical-centers/filter/?speciality=60
+&speciality=60
+&procedure=43
+&center_type=Hosp
+&center_type=Clin
 

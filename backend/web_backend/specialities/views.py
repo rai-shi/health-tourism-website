@@ -33,4 +33,16 @@ class SpecialitiesView(APIView):
         )
         return response
 
+    
+
+class SpecialityProcedureSelectionView(APIView):
+    def get(self, request, speciality_id=None, procedure_id=None):
+
+        if speciality_id and procedure_id:
+            new_url = f"/medical-centers/{speciality_id}/{procedure_id}"
+            return redirect(new_url)
         
+        return Response(
+            {"message": "Speciality or procedure not provided."},
+            status=status.HTTP_400_BAD_REQUEST
+        )
