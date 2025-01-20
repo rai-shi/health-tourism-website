@@ -1,5 +1,6 @@
 from rest_framework import serializers
 from .models import Patient
+from .models import MedicalCenterRequest, MedicalCenterRequestFile
 
 class PatientSerializers(serializers.ModelSerializer):
     # return field with their __str__ return 
@@ -22,3 +23,22 @@ class PatientSerializers(serializers.ModelSerializer):
             "created_at": {"read_only": True},  # read-only
         }
     
+
+class MedicalCenterRequestFileSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = MedicalCenterRequestFile
+        fields = ['id', 'file']
+
+class MedicalCenterRequestSerializer(serializers.ModelSerializer):
+    # files = MedicalCenterRequestFileSerializer(many=True, required=False)
+
+    class Meta:
+        model = MedicalCenterRequest
+        fields = [
+            'id', 'patient', 'medical_center', 'speciality', 'procedure',
+            'name', 'surname', 'gender', 'birthday', 'phone', 'email',
+            'country', 'city', 
+            'disease_history', 'previous_disease', 'previous_surgery',
+            'previous_treatment', 'other_comments', 
+            # 'files'
+        ]

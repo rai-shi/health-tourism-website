@@ -49,7 +49,7 @@ users/update-email
 "new_email" : "biri@example.com"
 }
 
-users/update-personal-info 
+patient/update-personal-info 
 {
     "gender": "w",
     "birthday": "2000-2-7",
@@ -193,4 +193,25 @@ http://127.0.0.1:8000/medical-centers/filter/?speciality=60
 &procedure=43
 &center_type=Hosp
 &center_type=Clin
+
+
+medical-centers/id/ POST -> redirect -> /patient/medical-center-request POST
+{
+    "medical_center"  : 1,
+    "speciality"      : 60,
+    "procedure"       : 33,
+    "name"            : "Ayse",
+    "surname"         : "Tak",
+    "gender"        : "w",
+    "birthday"      : "2000-2-7",
+    "phone"         : "+905323936604",
+    "email"         : "aysenurtak1@gmail.com",
+    "country"       : "TR",
+    "city"          : "Samsun",
+    "disease_history"     : "Started on five months ago.",
+    "previous_disease"    : "-",
+    "previous_surgery"    : "-",
+    "previous_treatment"  : "-",
+    "other_comments"      : "-"
+}
 
