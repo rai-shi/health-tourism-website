@@ -53,6 +53,8 @@ INSTALLED_APPS = [
     'specialities',
     'destinations',
 
+    'admin_dashboard',
+
     # api packages
     'rest_framework',
     'rest_framework_simplejwt',
