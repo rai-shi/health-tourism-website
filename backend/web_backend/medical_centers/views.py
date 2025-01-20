@@ -8,6 +8,8 @@ from rest_framework import status
 from users.views import *
 from .models import *
 from .serializers import *
+from patient.models import MedicalCenterRequest
+from patient.serializers import MedicalCenterRequestSerializer
 
 from django.shortcuts import redirect
 from django.urls import reverse
@@ -553,3 +555,35 @@ class MedicalCenterPhotosView(APIView):
             {"message": f"{deleted_count} doctors successfully deleted."},
             status=status.HTTP_200_OK
         )
+    
+
+class MedicalCenterRequestsView(APIView):
+    def get(self, request):
+        token       = request.COOKIES.get("jwt")
+        payload     = isTokenValid(token=token)
+
+        user, medcent = getMedicalCenterByID(payload=payload)
+        # get patient requests
+        try:
+            requests = MedicalCenterRequest.objects.filter( medical_center = medcent.id )
+        except:
+            return Response (
+                {
+                    "message" : "Requests are not found!" 
+                },
+                status = status.HTTP_404_NOT_FOUND
+            )
+    
+        serializer = MedicalCenterRequestSerializer(requests, many = True)
+
+        return Response(
+                    {
+                        "requests" : serializer.data,
+                    },
+                    status=status.HTTP_200_OK
+                )   
+
+class FilteredMedicalCenterRequestsView(APIView):
+    def get(self, request):
+        pass 
+    
