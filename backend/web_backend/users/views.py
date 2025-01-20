@@ -157,15 +157,15 @@ class LoginView(APIView):
         return response
 
 # /me -> gerek yok patient/me hospital/me den ulaşılacak
-class UserView(APIView):
-    def get(self, request):
-        token = request.COOKIES.get("jwt")
-        payload = isTokenValid(token=token)
-        user = getUserByID(payload)
+# class UserView(APIView):
+#     def get(self, request):
+#         token = request.COOKIES.get("jwt")
+#         payload = isTokenValid(token=token)
+#         user = getUserByID(payload)
 
-        # make the response data json valid
-        serializer = UserSerializers(user)
-        return Response(serializer.data)
+#         # make the response data json valid
+#         serializer = UserSerializers(user)
+#         return Response(serializer.data)
 
 class LogoutView(APIView):
     def post(self, request):
