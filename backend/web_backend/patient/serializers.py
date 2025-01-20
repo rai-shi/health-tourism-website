@@ -31,6 +31,10 @@ class MedicalCenterRequestFileSerializer(serializers.ModelSerializer):
 
 class MedicalCenterRequestSerializer(serializers.ModelSerializer):
     # files = MedicalCenterRequestFileSerializer(many=True, required=False)
+    city = serializers.SerializerMethodField()
+    country = serializers.SerializerMethodField()
+    speciality = serializers.SerializerMethodField()
+    procedure = serializers.SerializerMethodField()
 
     class Meta:
         model = MedicalCenterRequest
@@ -42,3 +46,21 @@ class MedicalCenterRequestSerializer(serializers.ModelSerializer):
             'previous_treatment', 'other_comments', 
             # 'files'
         ]
+
+    def get_city(self, obj):
+        return obj.city.name 
+    
+    def get_country(self, obj):
+        return obj.country.name  
+    
+    def get_speciality(self, obj):
+        return {
+            "id" : obj.speciality.id, 
+            "name" : obj.speciality.name
+            } 
+    
+    def get_procedure(self, obj):
+        return {
+            "id" : obj.procedure.id, 
+            "name" : obj.procedure.name
+            } 

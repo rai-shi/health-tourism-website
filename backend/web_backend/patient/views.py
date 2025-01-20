@@ -9,7 +9,7 @@ from rest_framework_simplejwt.tokens import RefreshToken
 
 from users.serializers import UserSerializers
 from .serializers import PatientSerializers, MedicalCenterRequestSerializer
-from .models import Patient
+from .models import Patient, MedicalCenterRequest
 from cities_light.models import City, Country
 
 def getPatientByID(payload):
@@ -114,4 +114,28 @@ class RequestToMedicalCenterView(APIView):
             return response
         return Response(serializer.errors, status=400)
 
+    def get(self, request):
+        token       = request.COOKIES.get("jwt")
+        payload     = isTokenValid(token=token)
+
+        user, patient = getPatientByID(payload=payload)
+        # get patient requests
+        try:
+            requests = MedicalCenterRequest.objects.filter( patient = patient.id )
+        except:
+            return Response (
+                {
+                    "message" : "Requests are not found!" 
+                },
+                status = status.HTTP_404_NOT_FOUND
+            )
+    
+        serializer = MedicalCenterRequestSerializer(requests, many = True)
+
+        return Response(
+                    {
+                        "requests" : serializer.data,
+                    },
+                    status=status.HTTP_200_OK
+                )   
 
