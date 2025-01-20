@@ -220,3 +220,10 @@ requests/filter GET
 http://127.0.0.1:8000/medical-center/requests/filter/?speciality=60
 &speciality=60
 &procedure=33
+
+
+
+
+/admin 
+aysenurtak1@gmail.com
+930615fly 

@@ -22,6 +22,9 @@ class Patient(models.Model):
     # one to one relation with base User model
     user            =   models.OneToOneField(User, on_delete=models.CASCADE, related_name="patient")
 
+    def __str__(self):
+        return f"{self.user.first_name} {self.user.last_name}"
+
 
 # r'^\+?1?\d{9,15}$'
 # phone_regex = RegexValidator(regex=r'^\d{10}$')
@@ -59,8 +62,15 @@ class MedicalCenterRequest(models.Model):
     other_comments      = models.TextField(null=True, blank=True)
 
     created_at = models.DateTimeField(auto_now_add=True)
+
+    def __str__(self):
+        return f"{self.patient.user.first_name} {self.patient.user.last_name} to {self.medical_center} for {self.speciality}-{self.procedure}"
     
 
 class MedicalCenterRequestFile(models.Model):
     request = models.ForeignKey(MedicalCenterRequest, on_delete=models.CASCADE, related_name="files")
     file    = models.FileField(upload_to="medical_center_requests/files/")
+    
+    def __str__(self):
+        return f"{self.request.id}-{self.id}"
+    
