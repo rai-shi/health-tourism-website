@@ -563,7 +563,7 @@ class MedicalCenterRequestsView(APIView):
         payload     = isTokenValid(token=token)
 
         user, medcent = getMedicalCenterByID(payload=payload)
-        # get patient requests
+        # get medical center's requests
         try:
             requests = MedicalCenterRequest.objects.filter( medical_center = medcent.id )
         except:
@@ -585,5 +585,41 @@ class MedicalCenterRequestsView(APIView):
 
 class FilteredMedicalCenterRequestsView(APIView):
     def get(self, request):
-        pass 
+        token       = request.COOKIES.get("jwt")
+        payload     = isTokenValid(token=token)
+
+        user, medcent = getMedicalCenterByID(payload=payload)
+
+        speciality = request.query_params.get("speciality")
+        procedure = request.query_params.get("procedure")
+
+        if speciality or procedure:
+
+            queryset = MedicalCenterRequest.objects.filter( medical_center = medcent.id )
+
+            if speciality:
+                queryset = queryset.filter(speciality=speciality)
+            if procedure:
+                queryset = queryset.filter(procedure=procedure)
+
+
+            if not queryset.exists():
+                return Response(
+                    {"message": "No request found matching the filters."},
+                    status=status.HTTP_404_NOT_FOUND,
+                )
+
+            serializer = MedicalCenterRequestSerializer(queryset, many=True)
+            return Response(serializer.data, status=status.HTTP_200_OK)
+        
+        else:
+            return Response(
+                {"error": "Please provide at least one filter."},
+                status=status.HTTP_400_BAD_REQUEST,
+            )
+
+
+        
+
+
     

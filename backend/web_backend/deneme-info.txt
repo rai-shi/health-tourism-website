@@ -215,3 +215,8 @@ medical-centers/id/ POST -> redirect -> /patient/medical-center-request POST
     "other_comments"      : "-"
 }
 
+
+requests/filter GET 
+http://127.0.0.1:8000/medical-center/requests/filter/?speciality=60
+&speciality=60
+&procedure=33
