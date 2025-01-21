@@ -12,11 +12,12 @@ urlpatterns = [
     path("users/", AdminUsersView.as_view(), name="users-list"),
 
     path("users/create/", AdminUserCreateView.as_view(), name="user-create"),
-
+    # GET, POST 
     path("specialities/", AdminSpecialitiesView.as_view(), name="specialities"),
+    # POST, DELETE
     path("specialities/<int:id>", AdminSpecialitiesView.as_view(), name="specialities"),
-
-    path("procedures/", AdminProceduresView.as_view(), name="procedures"),
+    # DELETE
+    path("specialities/<int:speciality_id>/<int:procedure_id>", AdminProceduresView.as_view(), name="procedures"),
 
     path("insurances/", AdminInsurancesView.as_view(), name="insurances"),
 

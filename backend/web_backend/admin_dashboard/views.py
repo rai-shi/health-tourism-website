@@ -28,7 +28,7 @@ from users.views import generateToken, isTokenValid, getUserByID
 from users.serializers import UserSerializers
 
 from medical_centers.models import MedicalCenter, Speciality, Procedure
-from specialities.serializers import SpecialitySerializer
+from specialities.serializers import SpecialitySerializer, ProcedureSerializer
 
 from patient.models import Patient
 
@@ -157,7 +157,7 @@ class AdminSpecialitiesView(APIView):
         return response
 
 
-    def post(self, request):
+    def post(self, request, id=None):
         token = request.COOKIES.get("jwt")
         payload = isTokenValid(token=token)
         user = getUserByID(payload)
@@ -166,21 +166,29 @@ class AdminSpecialitiesView(APIView):
                             {"message": "You must be a superuser to access this page."},
                             status=status.HTTP_403_FORBIDDEN
                         )
-        try: 
-            specialities = Speciality.objects.all()
-        except:
-            return Response(
-                {"message": "Not found any speciality record!"},
-                status = status.HTTP_404_NOT_FOUND
+        # procedure creation
+        if id is not None:
+            serializer = ProcedureSerializer(data=request.data)
+            if serializer.is_valid():
+                    serializer.save()
+            else:
+                return Response(serializer.errors, status=400)
+
+            response = Response(
+                {
+                    "message": "Procedure is successfully added.",
+                },
+                status=status.HTTP_200_OK
             )
+            return response
+        # speciality creation
         # name = request.data.get("name")
         # code = request.data.get("code")
-
         serializer = SpecialitySerializer(data=request.data)
         if serializer.is_valid():
                 serializer.save()
         else:
-             return Response(serializer.errors, status=400)
+            return Response(serializer.errors, status=400)
 
         response = Response(
             {
@@ -229,10 +237,32 @@ class AdminSpecialitiesView(APIView):
         )
 
 class AdminProceduresView(APIView):
-    def get(self, request):
-        pass
-    def post(self, request):
-        pass
+    # def get(self, request):
+    #     pass
+    def delete(self, request, speciality_id, procedure_id ):
+        token = request.COOKIES.get("jwt")
+        payload = isTokenValid(token=token)
+        user = getUserByID(payload)
+        if not user.is_superuser:
+            return Response(
+                            {"message": "You must be a superuser to access this page."},
+                            status=status.HTTP_403_FORBIDDEN
+                        )
+        try:
+            instance = Procedure.objects.get(id=procedure_id)
+        except Procedure.DoesNotExist:
+            return Response(
+                {"message": "Procedure is not found!"},
+                status=status.HTTP_404_NOT_FOUND
+            )
+
+        name = instance.name
+        instance.delete()
+        return Response(
+            {"message": f"{name} is successfully deleted."},
+            status=status.HTTP_200_OK
+        )
+
 
 class AdminInsurancesView(APIView):
     def get(self, request):

@@ -227,3 +227,18 @@ http://127.0.0.1:8000/medical-center/requests/filter/?speciality=60
 /admin 
 aysenurtak1@gmail.com
 930615fly 
+
+
+
+http://127.0.0.1:8000/admin-dashboard/specialities/ POST 
+{
+    "name" : "In Vitro Fertilization Center",
+    "code" : "IVFCenter"
+}
+
+http://127.0.0.1:8000/admin-dashboard/specialities/ POST 
+{
+    "name" : "Bipolar disorder",
+    "code" : "Psych-1"
+    "speciality" : "Psych"
+}
