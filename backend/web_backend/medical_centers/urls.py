@@ -30,7 +30,7 @@ urlpatterns = [
     path('profile/photos/', MedicalCenterPhotosView.as_view(), name="videos"),         
     path('profile/photos/<int:pk>', MedicalCenterPhotosView.as_view(), name="video"),         
      
-    path('requests', MedicalCenterRequestsView.as_view(), name="requests"),
+    path('requests/', MedicalCenterRequestsView.as_view(), name="requests"),
     path('requests/filter/', FilteredMedicalCenterRequestsView.as_view(), name="filtered-requests")
   
     # path('medical-center-statistics/'),     # GET

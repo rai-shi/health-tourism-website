@@ -32,7 +32,8 @@ from medical_centers.serializers import HealthInstitutionsSerializer
 
 from specialities.serializers import SpecialitySerializer, ProcedureSerializer
 
-from patient.models import Patient
+from patient.models import Patient, MedicalCenterRequest
+from .serializers import RequestsSerializer
 
 from destinations.models import Destination
 from destinations.serializers import DestinationSerializer, DestinationListSerializer
@@ -490,9 +491,32 @@ class AdminDestinationsView(APIView):
 
 class AdminRequestsView(APIView):
     def get(self, request):
-        pass
-    def post(self, request):
-        pass
+        token = request.COOKIES.get("jwt")
+        payload = isTokenValid(token=token)
+        user = getUserByID(payload)
+        if not user.is_superuser:
+            return Response(
+                            {"message": "You must be a superuser to access this page."},
+                            status=status.HTTP_403_FORBIDDEN
+                        )
+        try:
+            requests = MedicalCenterRequest.objects.all()
+        except:
+            return Response (
+                {
+                    "message" : "Requests are not found!" 
+                },
+                status = status.HTTP_404_NOT_FOUND
+            )
+    
+        serializer = RequestsSerializer(requests, many = True)
+
+        return Response(
+                    {
+                        "requests" : serializer.data,
+                    },
+                    status=status.HTTP_200_OK
+                )  
 
 class AdminBlogView(APIView):
     def get(self, request):
