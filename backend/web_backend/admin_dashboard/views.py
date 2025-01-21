@@ -27,7 +27,9 @@ from users.models import User
 from users.views import generateToken, isTokenValid, getUserByID
 from users.serializers import UserSerializers
 
-from medical_centers.models import MedicalCenter
+from medical_centers.models import MedicalCenter, Speciality, Procedure
+from specialities.serializers import SpecialitySerializer
+
 from patient.models import Patient
 
 class AdminView(APIView):
@@ -131,7 +133,30 @@ class AdminUsersView(APIView):
     
 class AdminSpecialitiesView(APIView):
     def get(self, request):
-        pass
+        token = request.COOKIES.get("jwt")
+        payload = isTokenValid(token=token)
+        user = getUserByID(payload)
+        if not user.is_superuser:
+            return Response(
+                            {"message": "You must be a superuser to access this page."},
+                            status=status.HTTP_403_FORBIDDEN
+                        )
+        try: 
+            specialities = Speciality.objects.all()
+        except:
+            return Response(
+                {"message": "Not found any speciality record!"},
+                status = status.HTTP_404_NOT_FOUND
+            )
+        serializer = SpecialitySerializer(specialities, many= True)
+
+        response = Response(
+            serializer.data,
+            status= status.HTTP_200_OK
+        )
+        return response
+
+
     def post(self, request):
         pass
 
