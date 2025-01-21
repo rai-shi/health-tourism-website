@@ -12,6 +12,8 @@ urlpatterns = [
     path("users/", AdminUsersView.as_view(), name="users-list"),
 
     path("users/create/", AdminUserCreateView.as_view(), name="user-create"),
+
+
     # GET, POST 
     path("specialities/", AdminSpecialitiesView.as_view(), name="specialities"),
     # POST, DELETE
@@ -23,14 +25,20 @@ urlpatterns = [
     # DELETE
     path("insurances/<int:id>", AdminInsurancesView.as_view(), name="insurances"),
 
+
     # GET POST, DELETE
     path("destinations/", AdminDestinationsView.as_view(), name="destinations"),
     # PUT, DELETE 
     path("destinations/<int:id>", AdminDestinationsView.as_view(), name="destinations"),
 
+
     # GET
     path("requests/", AdminRequestsView.as_view(), name="requests"),
     path("requests/filter/", FilteredRequestsView.as_view(), name="filtered-requests"),
+
+
+    path("medical-centers/", AdminMedicalCenter.as_view(), name="medical-centers"),
+    path("medical-centers/filter/", AdminFilteredMedicalCenter.as_view(), name="filtered-medical-centers"),
 
     path("blogs/", AdminBlogView.as_view(), name="blog"),
 

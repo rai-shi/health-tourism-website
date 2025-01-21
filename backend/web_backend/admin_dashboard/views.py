@@ -32,8 +32,8 @@ from medical_centers.serializers import HealthInstitutionsSerializer
 
 from specialities.serializers import SpecialitySerializer, ProcedureSerializer
 
-from patient.models import Patient, MedicalCenterRequest
-from .serializers import RequestsSerializer
+from patient.models import MedicalCenterRequest
+from .serializers import *
 
 from destinations.models import Destination
 from destinations.serializers import DestinationSerializer, DestinationListSerializer
@@ -521,8 +521,14 @@ class AdminRequestsView(APIView):
 
 class FilteredRequestsView(APIView):
     def get(self, request):
-        token       = request.COOKIES.get("jwt")
-        payload     = isTokenValid(token=token)
+        token = request.COOKIES.get("jwt")
+        payload = isTokenValid(token=token)
+        user = getUserByID(payload)
+        if not user.is_superuser:
+            return Response(
+                            {"message": "You must be a superuser to access this page."},
+                            status=status.HTTP_403_FORBIDDEN
+                        )
 
         speciality = request.query_params.get("speciality")
         procedure = request.query_params.get("procedure")
@@ -563,6 +569,65 @@ class FilteredRequestsView(APIView):
                 status=status.HTTP_400_BAD_REQUEST,
             )
 
+
+class AdminMedicalCenter(APIView):
+    def get(self, request):
+        token = request.COOKIES.get("jwt")
+        payload = isTokenValid(token=token)
+        user = getUserByID(payload)
+        if not user.is_superuser:
+            return Response(
+                            {"message": "You must be a superuser to access this page."},
+                            status=status.HTTP_403_FORBIDDEN
+                        )
+        try: 
+            medcents = MedicalCenter.objects.all()
+        except:
+            return Response(
+                {"message": "Not found any speciality record!"},
+                status = status.HTTP_404_NOT_FOUND
+            )
+        serializer = AdminMedicalCenterSerializer(medcents, many= True)
+
+        response = Response(
+            serializer.data,
+            status= status.HTTP_200_OK
+        )
+        return response
+
+class AdminFilteredMedicalCenter(APIView):
+    def get(self, request):
+        token = request.COOKIES.get("jwt")
+        payload = isTokenValid(token=token)
+        user = getUserByID(payload)
+        if not user.is_superuser:
+            return Response(
+                            {"message": "You must be a superuser to access this page."},
+                            status=status.HTTP_403_FORBIDDEN
+                        )
+        city = request.query_params.get("city")
+
+        if city:
+
+            queryset = MedicalCenter.objects.all()  
+
+            if city:
+                queryset = queryset.filter(city=city)
+
+            if not queryset.exists():
+                return Response(
+                    {"message": "No request found matching the filters."},
+                    status=status.HTTP_404_NOT_FOUND,
+                )
+
+            serializer = AdminMedicalCenterSerializer(queryset, many=True)
+            return Response(serializer.data, status=status.HTTP_200_OK)
+        
+        else:
+            return Response(
+                {"error": "Please provide at least one filter."},
+                status=status.HTTP_400_BAD_REQUEST,
+            )
 
         
 

@@ -63,7 +63,7 @@ medical-center/profile PUT
     "user": 10,
     "center_name": "Awesome Medical Center",
     "center_type": "Hosp",
-    "city": "IST",
+    "city": "IST", / 1
     "contact_number": "+905555555555",
     "mail_address": "info@medicalcenter.com",
     "web_site": "https://medicalcenter.com",
@@ -253,3 +253,16 @@ http://127.0.0.1:8000/admin-dashboard/destinations/ POST
 {
     "name" : "KARS"
 }
+
+
+admin-dashboard/requests/filter GET 
+http://127.0.0.1:8000/admin-dashboard/requests/filter/? 
+
+&speciality=60
+&procedure=33
+&medcent=1
+&country=TR
+&city=SAMSUN
+
+admin-dashboard/medical-centers/filter GET
+http://127.0.0.1:8000/admin-dashboard/medical-centers/filter/?city=2
