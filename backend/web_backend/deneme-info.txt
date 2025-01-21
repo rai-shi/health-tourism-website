@@ -248,3 +248,8 @@ http://127.0.0.1:8000/admin-dashboard/insurances/ POST
     "name" : "Sosyal Güvenlik Kurumu",
     "code" : "SGK"
 }
+
+http://127.0.0.1:8000/admin-dashboard/destinations/ POST 
+{
+    "name" : "KARS"
+}

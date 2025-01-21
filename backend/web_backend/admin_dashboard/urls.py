@@ -23,10 +23,14 @@ urlpatterns = [
     # DELETE
     path("insurances/<int:id>", AdminInsurancesView.as_view(), name="insurances"),
 
+    # GET POST, DELETE
     path("destinations/", AdminDestinationsView.as_view(), name="destinations"),
+    # PUT, DELETE 
     path("destinations/<int:id>", AdminDestinationsView.as_view(), name="destinations"),
 
+    # GET
     path("requests/", AdminRequestsView.as_view(), name="requests"),
+    path("requests/filter/", FilteredRequestsView.as_view(), name="filtered-requests"),
 
     path("blogs/", AdminBlogView.as_view(), name="blog"),
 

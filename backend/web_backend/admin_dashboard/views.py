@@ -38,6 +38,7 @@ from .serializers import RequestsSerializer
 from destinations.models import Destination
 from destinations.serializers import DestinationSerializer, DestinationListSerializer
 
+from cities_light.models import City, Country
 
 class AdminView(APIView):
     def get(self, request):
@@ -517,6 +518,56 @@ class AdminRequestsView(APIView):
                     },
                     status=status.HTTP_200_OK
                 )  
+
+class FilteredRequestsView(APIView):
+    def get(self, request):
+        token       = request.COOKIES.get("jwt")
+        payload     = isTokenValid(token=token)
+
+        speciality = request.query_params.get("speciality")
+        procedure = request.query_params.get("procedure")
+        medcent = request.query_params.get("medcent")
+        country = request.query_params.get("country")
+        city = request.query_params.get("city")
+
+        if speciality or procedure or medcent or country or city:
+
+            queryset = MedicalCenterRequest.objects.all()
+
+            if speciality:
+                queryset = queryset.filter(speciality=speciality)
+            if procedure:
+                queryset = queryset.filter(procedure=procedure)
+            if medcent:
+                queryset = queryset.filter(medical_center=medcent)
+            if country:
+                country_instance = Country.objects.filter(code2=country).first()
+                queryset = queryset.filter(country=country_instance.id)
+            if city:
+                city_instance = City.objects.filter(name=city).first()
+                queryset = queryset.filter(city=city_instance.id)
+
+
+            if not queryset.exists():
+                return Response(
+                    {"message": "No request found matching the filters."},
+                    status=status.HTTP_404_NOT_FOUND,
+                )
+
+            serializer = RequestsSerializer(queryset, many=True)
+            return Response(serializer.data, status=status.HTTP_200_OK)
+        
+        else:
+            return Response(
+                {"error": "Please provide at least one filter."},
+                status=status.HTTP_400_BAD_REQUEST,
+            )
+
+
+        
+
+
+    
 
 class AdminBlogView(APIView):
     def get(self, request):
