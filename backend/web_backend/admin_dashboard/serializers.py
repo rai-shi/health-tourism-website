@@ -1,5 +1,5 @@
 from rest_framework import serializers
-from patient.models import MedicalCenterRequest
+from patient.models import MedicalCenterRequest, Patient
 from medical_centers.models import MedicalCenter
 
 class RequestsSerializer(serializers.ModelSerializer):
@@ -73,4 +73,33 @@ class AdminMedicalCenterSerializer(serializers.ModelSerializer):
         return {
             "id" : obj.city.id,
             "city": obj.city.name
+        }
+    
+
+class AdminPatientSerializer(serializers.ModelSerializer):
+
+    email = serializers.SerializerMethodField()
+    city = serializers.SerializerMethodField()
+    country = serializers.SerializerMethodField()
+    class Meta:
+        model = Patient
+        fields = [
+            "id", "email",
+            "country", "city",
+
+        ]
+    
+    def get_email(self, obj):
+        return obj.user.email
+    
+    def get_city(self, obj):
+        return {
+            "id" : obj.city.id,
+            "city": obj.city.name
+        }
+    
+    def get_country(self, obj):
+        return {
+            "id" : obj.country.id,
+            "country": obj.country.name
         }

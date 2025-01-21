@@ -266,3 +266,10 @@ http://127.0.0.1:8000/admin-dashboard/requests/filter/?
 
 admin-dashboard/medical-centers/filter GET
 http://127.0.0.1:8000/admin-dashboard/medical-centers/filter/?city=2
+
+
+
+admin-dashboard/patient/filter/ GET
+http://127.0.0.1:8000/admin-dashboard/patient/filter/?country=TR&city=Samsun
+&country=TR
+&city=Samsun

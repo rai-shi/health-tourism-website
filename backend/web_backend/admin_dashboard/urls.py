@@ -40,6 +40,9 @@ urlpatterns = [
     path("medical-centers/", AdminMedicalCenter.as_view(), name="medical-centers"),
     path("medical-centers/filter/", AdminFilteredMedicalCenter.as_view(), name="filtered-medical-centers"),
 
+    path("patient/", AdminPatient.as_view(), name="patient"),
+    path("patient/filter/", AdminFilteredPatient.as_view(), name="filtered-patient"),
+
     path("blogs/", AdminBlogView.as_view(), name="blog"),
 
     path("aboutus/", AdminView.as_view(), name="aboutus"),

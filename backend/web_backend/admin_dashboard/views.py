@@ -32,7 +32,7 @@ from medical_centers.serializers import HealthInstitutionsSerializer
 
 from specialities.serializers import SpecialitySerializer, ProcedureSerializer
 
-from patient.models import MedicalCenterRequest
+from patient.models import MedicalCenterRequest, Patient
 from .serializers import *
 
 from destinations.models import Destination
@@ -584,7 +584,7 @@ class AdminMedicalCenter(APIView):
             medcents = MedicalCenter.objects.all()
         except:
             return Response(
-                {"message": "Not found any speciality record!"},
+                {"message": "Not found any medical center record!"},
                 status = status.HTTP_404_NOT_FOUND
             )
         serializer = AdminMedicalCenterSerializer(medcents, many= True)
@@ -621,6 +621,72 @@ class AdminFilteredMedicalCenter(APIView):
                 )
 
             serializer = AdminMedicalCenterSerializer(queryset, many=True)
+            return Response(serializer.data, status=status.HTTP_200_OK)
+        
+        else:
+            return Response(
+                {"error": "Please provide at least one filter."},
+                status=status.HTTP_400_BAD_REQUEST,
+            )
+
+
+class AdminPatient(APIView):
+    def get(self, request):
+        token = request.COOKIES.get("jwt")
+        payload = isTokenValid(token=token)
+        user = getUserByID(payload)
+        if not user.is_superuser:
+            return Response(
+                            {"message": "You must be a superuser to access this page."},
+                            status=status.HTTP_403_FORBIDDEN
+                        )
+        try: 
+            patient = Patient.objects.all()
+        except:
+            return Response(
+                {"message": "Not found any patient record!"},
+                status = status.HTTP_404_NOT_FOUND
+            )
+        serializer = AdminPatientSerializer(patient, many= True)
+
+        response = Response(
+            serializer.data,
+            status= status.HTTP_200_OK
+        )
+        return response
+
+class AdminFilteredPatient(APIView):
+    def get(self, request):
+        token = request.COOKIES.get("jwt")
+        payload = isTokenValid(token=token)
+        user = getUserByID(payload)
+        if not user.is_superuser:
+            return Response(
+                            {"message": "You must be a superuser to access this page."},
+                            status=status.HTTP_403_FORBIDDEN
+                        )
+        city = request.query_params.get("city")
+        country = request.query_params.get("country")
+
+        if city or country:
+
+            queryset = Patient.objects.all()  
+
+            if country:
+                country_instance = Country.objects.filter(code2=country).first()
+                queryset = queryset.filter(country=country_instance.id)
+            if city:
+                city_instance = City.objects.filter(name=city).first()
+                queryset = queryset.filter(city=city_instance.id)
+
+
+            if not queryset.exists():
+                return Response(
+                    {"message": "No request found matching the filters."},
+                    status=status.HTTP_404_NOT_FOUND,
+                )
+
+            serializer = AdminPatientSerializer(queryset, many=True)
             return Response(serializer.data, status=status.HTTP_200_OK)
         
         else:
