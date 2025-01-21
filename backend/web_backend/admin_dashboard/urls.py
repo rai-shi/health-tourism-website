@@ -18,11 +18,13 @@ urlpatterns = [
     path("specialities/<int:id>", AdminSpecialitiesView.as_view(), name="specialities"),
     # DELETE
     path("specialities/<int:speciality_id>/<int:procedure_id>", AdminProceduresView.as_view(), name="procedures"),
-
+    # GET POST
     path("insurances/", AdminInsurancesView.as_view(), name="insurances"),
+    # DELETE
     path("insurances/<int:id>", AdminInsurancesView.as_view(), name="insurances"),
 
     path("destinations/", AdminDestinationsView.as_view(), name="destinations"),
+    path("destinations/<int:id>", AdminDestinationsView.as_view(), name="destinations"),
 
     path("requests/", AdminRequestsView.as_view(), name="requests"),
 

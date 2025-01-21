@@ -34,6 +34,10 @@ from specialities.serializers import SpecialitySerializer, ProcedureSerializer
 
 from patient.models import Patient
 
+from destinations.models import Destination
+from destinations.serializers import DestinationSerializer, DestinationListSerializer
+
+
 class AdminView(APIView):
     def get(self, request):
         token = request.COOKIES.get("jwt")
@@ -353,10 +357,136 @@ class AdminInsurancesView(APIView):
 
 
 class AdminDestinationsView(APIView):
-    def get(self, request):
-        pass
+    def get(self, request, id=None):
+        token = request.COOKIES.get("jwt")
+        payload = isTokenValid(token=token)
+        user = getUserByID(payload)
+        if not user.is_superuser:
+            return Response(
+                            {"message": "You must be a superuser to access this page."},
+                            status=status.HTTP_403_FORBIDDEN
+                        )
+        if id is not None:
+            try: 
+                destination = Destination.objects.get(id=id)
+            except:
+                return Response(
+                    {"message": "Destination is not found!"},
+                    status = status.HTTP_404_NOT_FOUND
+                )
+            serializer = DestinationSerializer(destination)
+
+            response = Response(
+                serializer.data,
+                status= status.HTTP_200_OK
+            )
+            return response
+        
+        # else
+        try: 
+            destinations = Destination.objects.all()
+        except:
+            return Response(
+                {"message": "Not found any destination record!"},
+                status = status.HTTP_404_NOT_FOUND
+            )
+        serializer = DestinationListSerializer(destinations, many= True)
+
+        response = Response(
+            serializer.data,
+            status= status.HTTP_200_OK
+        )
+        return response
+
     def post(self, request):
-        pass
+        token = request.COOKIES.get("jwt")
+        payload = isTokenValid(token=token)
+        user = getUserByID(payload)
+        if not user.is_superuser:
+            return Response(
+                            {"message": "You must be a superuser to access this page."},
+                            status=status.HTTP_403_FORBIDDEN
+                        )
+        serializer = DestinationSerializer(data=request.data)
+        if serializer.is_valid():
+                serializer.save()
+        else:
+            return Response(serializer.errors, status=400)
+
+        response = Response(
+            {
+                "message": "Destination is successfully added.",
+            },
+            status=status.HTTP_200_OK
+        )
+        return response
+    
+    def put(self, request, id):
+        token = request.COOKIES.get("jwt")
+        payload = isTokenValid(token=token)
+        user = getUserByID(payload)
+        if not user.is_superuser:
+            return Response(
+                            {"message": "You must be a superuser to access this page."},
+                            status=status.HTTP_403_FORBIDDEN
+                        )
+        try:
+            dest_instance = Destination.objects.get(id=id)
+        except:
+             return Response(
+                    {"message": "Destination is not found!"},
+                    status=status.HTTP_404_NOT_FOUND
+                )
+        serializer = DestinationSerializer(dest_instance, data=request.data)
+        if serializer.is_valid():
+            serializer.save()
+            response = Response(
+                {
+                    "message": "Destination information is successfully updated.",
+                },
+                status=status.HTTP_200_OK
+            )   
+            return response
+        return Response(serializer.errors, status=400)
+    
+    def delete(self, request, id):
+        token = request.COOKIES.get("jwt")
+        payload = isTokenValid(token=token)
+        user = getUserByID(payload)
+        if not user.is_superuser:
+            return Response(
+                            {"message": "You must be a superuser to access this page."},
+                            status=status.HTTP_403_FORBIDDEN
+                        )
+        if id is not None:
+            try:
+                instance = Destination.objects.get(id=id)
+            except Destination.DoesNotExist:
+                return Response(
+                    {"message": "Destination is not found!"},
+                    status=status.HTTP_404_NOT_FOUND
+                )
+
+            name = instance.name
+            instance.delete()
+            return Response(
+                {"message": f"Destination {name} is successfully deleted."},
+                status=status.HTTP_200_OK
+            )
+
+        destination_ids = request.data.get("ids", [])
+        if not destination_ids:
+            return Response(
+                {"message": "No IDs provided for deletion!"},
+                status=status.HTTP_400_BAD_REQUEST
+            )
+
+        deleted_count, _ = Destination.objects.filter(id__in=destination_ids).delete()
+        return Response(
+            {"message": f"{deleted_count} destination successfully deleted."},
+            status=status.HTTP_200_OK
+        )
+
 
 class AdminRequestsView(APIView):
     def get(self, request):
