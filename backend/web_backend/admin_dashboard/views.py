@@ -132,7 +132,7 @@ class AdminUsersView(APIView):
                         )
     
 class AdminSpecialitiesView(APIView):
-    def get(self, request):
+    def get(self, request, id=None):
         token = request.COOKIES.get("jwt")
         payload = isTokenValid(token=token)
         user = getUserByID(payload)
@@ -158,7 +158,75 @@ class AdminSpecialitiesView(APIView):
 
 
     def post(self, request):
-        pass
+        token = request.COOKIES.get("jwt")
+        payload = isTokenValid(token=token)
+        user = getUserByID(payload)
+        if not user.is_superuser:
+            return Response(
+                            {"message": "You must be a superuser to access this page."},
+                            status=status.HTTP_403_FORBIDDEN
+                        )
+        try: 
+            specialities = Speciality.objects.all()
+        except:
+            return Response(
+                {"message": "Not found any speciality record!"},
+                status = status.HTTP_404_NOT_FOUND
+            )
+        # name = request.data.get("name")
+        # code = request.data.get("code")
+
+        serializer = SpecialitySerializer(data=request.data)
+        if serializer.is_valid():
+                serializer.save()
+        else:
+             return Response(serializer.errors, status=400)
+
+        response = Response(
+            {
+                "message": "Speciality is successfully added.",
+            },
+            status=status.HTTP_200_OK
+        )
+        return response
+    
+    def delete(self, request, id):
+        token = request.COOKIES.get("jwt")
+        payload = isTokenValid(token=token)
+        user = getUserByID(payload)
+        if not user.is_superuser:
+            return Response(
+                            {"message": "You must be a superuser to access this page."},
+                            status=status.HTTP_403_FORBIDDEN
+                        )
+        if id is not None:
+            try:
+                instance = Speciality.objects.get(id=id)
+            except Speciality.DoesNotExist:
+                return Response(
+                    {"message": "Speciality is not found!"},
+                    status=status.HTTP_404_NOT_FOUND
+                )
+
+            name = instance.name
+            instance.delete()
+            return Response(
+                {"message": f"{name} is successfully deleted."},
+                status=status.HTTP_200_OK
+            )
+
+        speciality_ids = request.data.get("ids", [])
+        if not speciality_ids:
+            return Response(
+                {"message": "No IDs provided for deletion!"},
+                status=status.HTTP_400_BAD_REQUEST
+            )
+
+        deleted_count, _ = Speciality.objects.filter(id__in=speciality_ids).delete()
+        return Response(
+            {"message": f"{deleted_count} speciality successfully deleted."},
+            status=status.HTTP_200_OK
+        )
 
 class AdminProceduresView(APIView):
     def get(self, request):

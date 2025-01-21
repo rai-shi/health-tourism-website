@@ -10,10 +10,11 @@ urlpatterns = [
     path("logout/", AdminLogoutView.as_view(), name="logout"),
     # GET 
     path("users/", AdminUsersView.as_view(), name="users-list"),
-    
+
     path("users/create/", AdminUserCreateView.as_view(), name="user-create"),
 
     path("specialities/", AdminSpecialitiesView.as_view(), name="specialities"),
+    path("specialities/<int:id>", AdminSpecialitiesView.as_view(), name="specialities"),
 
     path("procedures/", AdminProceduresView.as_view(), name="procedures"),
 
