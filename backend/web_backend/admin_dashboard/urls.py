@@ -3,6 +3,8 @@ from .views import *
 
 urlpatterns = [
     path("", AdminView.as_view(), name="landing-page"),
+    
+    # GET POST
     path("login/", AdminLoginView.as_view(), name="login"),
     path("logout/", AdminLogoutView.as_view(), name="logout"),
 
