@@ -3,9 +3,10 @@ from .views import *
 
 urlpatterns = [
     path("", AdminView.as_view(), name="landing-page"),
-    
+
     # GET POST
     path("login/", AdminLoginView.as_view(), name="login"),
+    # POST
     path("logout/", AdminLogoutView.as_view(), name="logout"),
 
     path("users/", AdminUsersView.as_view(), name="users-list"),

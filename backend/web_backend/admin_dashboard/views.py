@@ -4,7 +4,7 @@ from django.contrib.admin import site
 from django.contrib.auth.forms import AuthenticationForm
 from django.http import HttpResponseRedirect
 from django.shortcuts import render, redirect
-from django.contrib.auth import login, logout
+from django.contrib.auth import login, logout, authenticate
 from django.contrib import messages
 from django.http import HttpResponseForbidden
 
@@ -25,7 +25,10 @@ import jwt, datetime, json, environ, os
 
 from users.models import User
 from users.views import generateToken, isTokenValid, getUserByID
+from users.serializers import UserSerializers
 
+from medical_centers.models import MedicalCenter
+from patient.models import Patient
 
 class AdminView(APIView):
     def get(self, request):
@@ -37,9 +40,6 @@ class AdminView(APIView):
                             {"message": "You must be a superuser to access this page."},
                             status=status.HTTP_403_FORBIDDEN
                         )
-        if not user.is_authenticated:
-            messages.error(request, "Please login")
-            return redirect('/admin-dashboard/login') 
         return Response(
                             {"message": "admin landing page"},
                             status=status.HTTP_201_CREATED
@@ -54,7 +54,6 @@ class AdminLoginView(APIView):
         form = AuthenticationForm(request, data=request.POST)
         if form.is_valid():
             user = form.get_user()
-
             if not user.is_superuser:
                 messages.error(request, "You must be a superuser to access this page.")
                 return redirect('/admin-dashboard/login') 
@@ -62,7 +61,7 @@ class AdminLoginView(APIView):
             login(request, user)
             token = generateToken(user=user) 
             response = Response() 
-            response.set_cookie(key="jwt", value=token, httponly=True)  
+            response.set_cookie(key="jwt", value=token, httponly=True) 
             return response 
 
         return render(request, 'admin/login.html', {'form': form})
@@ -92,8 +91,41 @@ class AdminUserCreateView(APIView):
 
 class AdminUsersView(APIView):
     def get(self, request):
+        token = request.COOKIES.get("jwt")
+        payload = isTokenValid(token=token)
+        user = getUserByID(payload)
+        if not user.is_superuser:
+            return Response(
+                            {"message": "You must be a superuser to access this page."},
+                            status=status.HTTP_403_FORBIDDEN
+                        )
+        try:
+            users = User.objects.all()
+        except:
+            return Response(
+                    {"message": "Not found any user!"},
+                    status = status.HTTP_404_NOT_FOUND
+                )
+        serializer = UserSerializers(users, many=True)
+        users_dict = serializer.data
+        # ! user verileri anonimleştirilebilir
+        for user in users_dict:
+            try:
+                user_instance = User.objects.get(id=user['id'])  
+            except:
+                return Response(
+                    {"message": "User is not found!"},
+                    status = status.HTTP_404_NOT_FOUND
+                )
+            if hasattr(user_instance, 'medical_center'): 
+                user['role'] = 'medical-center'
+            elif hasattr(user_instance, 'patient'): 
+                user['role'] = 'patient'
+            else:
+                user['role'] = 'admin' 
+
         return Response(
-                            {"message": "admin users list"},
+                            users_dict,
                             status=status.HTTP_201_CREATED
                         )
     
