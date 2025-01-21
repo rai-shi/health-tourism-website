@@ -27,7 +27,9 @@ from users.models import User
 from users.views import generateToken, isTokenValid, getUserByID
 from users.serializers import UserSerializers
 
-from medical_centers.models import MedicalCenter, Speciality, Procedure
+from medical_centers.models import MedicalCenter, Speciality, Procedure, HealthInstitutions
+from medical_centers.serializers import HealthInstitutionsSerializer
+
 from specialities.serializers import SpecialitySerializer, ProcedureSerializer
 
 from patient.models import Patient
@@ -156,7 +158,6 @@ class AdminSpecialitiesView(APIView):
         )
         return response
 
-
     def post(self, request, id=None):
         token = request.COOKIES.get("jwt")
         payload = isTokenValid(token=token)
@@ -265,10 +266,91 @@ class AdminProceduresView(APIView):
 
 
 class AdminInsurancesView(APIView):
-    def get(self, request):
-        pass
+    def get(self, request, id=None):
+        token = request.COOKIES.get("jwt")
+        payload = isTokenValid(token=token)
+        user = getUserByID(payload)
+        if not user.is_superuser:
+            return Response(
+                            {"message": "You must be a superuser to access this page."},
+                            status=status.HTTP_403_FORBIDDEN
+                        )
+        try: 
+            insurances = HealthInstitutions.objects.all()
+        except:
+            return Response(
+                {"message": "Not found any insurance record!"},
+                status = status.HTTP_404_NOT_FOUND
+            )
+        serializer = HealthInstitutionsSerializer(insurances, many= True)
+
+        response = Response(
+            serializer.data,
+            status= status.HTTP_200_OK
+        )
+        return response
+
     def post(self, request):
-        pass
+        token = request.COOKIES.get("jwt")
+        payload = isTokenValid(token=token)
+        user = getUserByID(payload)
+        if not user.is_superuser:
+            return Response(
+                            {"message": "You must be a superuser to access this page."},
+                            status=status.HTTP_403_FORBIDDEN
+                        )
+        serializer = HealthInstitutionsSerializer(data=request.data)
+        if serializer.is_valid():
+                serializer.save()
+        else:
+            return Response(serializer.errors, status=400)
+
+        response = Response(
+            {
+                "message": "Health Insurance is successfully added.",
+            },
+            status=status.HTTP_200_OK
+        )
+        return response
+    
+    def delete(self, request, id):
+        token = request.COOKIES.get("jwt")
+        payload = isTokenValid(token=token)
+        user = getUserByID(payload)
+        if not user.is_superuser:
+            return Response(
+                            {"message": "You must be a superuser to access this page."},
+                            status=status.HTTP_403_FORBIDDEN
+                        )
+        if id is not None:
+            try:
+                instance = HealthInstitutions.objects.get(id=id)
+            except HealthInstitutions.DoesNotExist:
+                return Response(
+                    {"message": "Speciality is not found!"},
+                    status=status.HTTP_404_NOT_FOUND
+                )
+
+            name = instance.name
+            instance.delete()
+            return Response(
+                {"message": f"{name} is successfully deleted."},
+                status=status.HTTP_200_OK
+            )
+
+        insurance_ids = request.data.get("ids", [])
+        if not insurance_ids:
+            return Response(
+                {"message": "No IDs provided for deletion!"},
+                status=status.HTTP_400_BAD_REQUEST
+            )
+
+        deleted_count, _ = HealthInstitutions.objects.filter(id__in=insurance_ids).delete()
+        return Response(
+            {"message": f"{deleted_count} insurance successfully deleted."},
+            status=status.HTTP_200_OK
+        )
+
 
 class AdminDestinationsView(APIView):
     def get(self, request):

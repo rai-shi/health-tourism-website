@@ -20,6 +20,7 @@ urlpatterns = [
     path("specialities/<int:speciality_id>/<int:procedure_id>", AdminProceduresView.as_view(), name="procedures"),
 
     path("insurances/", AdminInsurancesView.as_view(), name="insurances"),
+    path("insurances/<int:id>", AdminInsurancesView.as_view(), name="insurances"),
 
     path("destinations/", AdminDestinationsView.as_view(), name="destinations"),
 

@@ -239,6 +239,12 @@ http://127.0.0.1:8000/admin-dashboard/specialities/ POST
 http://127.0.0.1:8000/admin-dashboard/specialities/ POST 
 {
     "name" : "Bipolar disorder",
-    "code" : "Psych-1"
-    "speciality" : "Psych"
+    "code" : "Psych-1",
+    "speciality" : 90
+}
+
+http://127.0.0.1:8000/admin-dashboard/insurances/ POST
+{
+    "name" : "Sosyal Güvenlik Kurumu",
+    "code" : "SGK"
 }

@@ -77,10 +77,10 @@ class MedicalCenterSpecialityUpdateSerializer(serializers.ModelSerializer):
         instance.save()
         return instance
 
-class ProcedureSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = Procedure
-        fields = '__all__' 
+# class ProcedureSerializer(serializers.ModelSerializer):
+#     class Meta:
+#         model = Procedure
+#         fields = '__all__' 
 
 
 class HealthInstitutionsSerializer(serializers.ModelSerializer):
