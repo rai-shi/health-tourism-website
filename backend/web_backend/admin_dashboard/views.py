@@ -99,6 +99,7 @@ class AdminUserCreateView(APIView):
     def post(self, request):
         pass
 
+
 class AdminUsersView(APIView):
     def get(self, request):
         token = request.COOKIES.get("jwt")
@@ -129,10 +130,17 @@ class AdminUsersView(APIView):
                 )
             if hasattr(user_instance, 'medical_center'): 
                 user['role'] = 'medical-center'
+                # make users private infos anonymous
+                user["first_name"] = user["first_name"][:2] + "*"*(len(user["first_name"])-2)
+                user["last_name"] = user["last_name"][:2] + "*"*(len(user["last_name"])-2)
             elif hasattr(user_instance, 'patient'): 
                 user['role'] = 'patient'
+                user["first_name"] = user["first_name"][:2] + "*"*(len(user["first_name"])-2)
+                user["last_name"] = user["last_name"][:2] + "*"*(len(user["last_name"])-2)
             else:
                 user['role'] = 'admin' 
+                user["first_name"] = user["first_name"][:2] + "*"*(len(user["first_name"])-2)
+                user["last_name"] = user["last_name"][:2] + "*"*(len(user["last_name"])-2)
 
         return Response(
                             users_dict,
