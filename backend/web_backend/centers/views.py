@@ -18,9 +18,28 @@ from django.urls import reverse
 
 
 class MedicalCentersView(APIView):
-    def get(self, request, id=None):
+    def get(self, request):
+        # return all medical centers list
         # no need to login
+        try: 
+            medcents = MedicalCenter.objects.all()
+        except:
+            return Response(
+                {"message": "Not found any medical center record!"},
+                status = status.HTTP_404_NOT_FOUND
+            )
+        serializer = MedicalCenterListSerializer(medcents, many= True)
 
+        response = Response(
+            serializer.data,
+            status= status.HTTP_200_OK
+        )
+        return response
+
+
+class MedicalCentersByIDView(APIView):
+    def get(self, requests, id):
+        # get medical center belongs to the provided id
         if id is not None:
             try: 
                 medcent = MedicalCenter.objects.get(id=id)
@@ -36,32 +55,20 @@ class MedicalCentersView(APIView):
                 status= status.HTTP_200_OK
             )
             return response
-        
-        # else
-        try: 
-            medcents = MedicalCenter.objects.all()
-        except:
+        else:
             return Response(
-                {"message": "Not found any medical center record!"},
-                status = status.HTTP_404_NOT_FOUND
-            )
-        serializer = MedicalCenterListSerializer(medcents, many= True)
-
-        response = Response(
-            serializer.data,
-            status= status.HTTP_200_OK
-        )
-        print("hey")
-        return response
+                    {"message": "Please provide a medical center ID."},
+                    status = status.HTTP_404_NOT_FOUND
+                )
     
-    def post(self, request, id=None):
+    def post(self, request, id):
         token       = request.COOKIES.get("jwt")
         payload     = isTokenValid(token=token)
 
         user, patient = getPatientByID(payload=payload)
 
         if patient:
-            new_url = f"/patient/medical-center-request"
+            new_url = f"/patient/medical-center-request/{id}/"
             return redirect(new_url)
         else:
             response = Response(
@@ -72,9 +79,8 @@ class MedicalCentersView(APIView):
             )
             return response
 
-
 class SpecialityBasedFilteredMedicalCentersView(APIView):
-    # this endpoint is redirection endpoint for speciality.views.SpecialityProcedureSelectionView
+    # this endpoint is end of the redirection endpoint for speciality.views.SpecialityProcedureSelectionView
     # speciality/<int:speciality_id>/<int:procedure_id>
     def get(self, request, speciality_id, procedure_id):
 

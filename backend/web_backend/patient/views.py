@@ -8,7 +8,7 @@ from rest_framework import status
 from rest_framework_simplejwt.tokens import RefreshToken
 
 from users.serializers import UserSerializers
-from .serializers import PatientSerializers, MedicalCenterRequestSerializer
+from .serializers import PatientSerializers, MedicalCenterRequestSerializer, MedicalCenterRequestViewSerializer
 from .models import Patient, MedicalCenterRequest
 from cities_light.models import City, Country
 
@@ -84,8 +84,9 @@ class UpdatePersonalInfoView(APIView):
 
 
 # POST
-class RequestToMedicalCenterView(APIView):
+class RequestsView(APIView):
     def post(self, request):
+        print("patient medical center request")
         token       = request.COOKIES.get("jwt")
         payload     = isTokenValid(token=token)
 
@@ -98,8 +99,6 @@ class RequestToMedicalCenterView(APIView):
         country_object = Country.objects.filter(code2=data["country"]).first() 
         data["city"] = city_object.id
         data["country"] = country_object.id
-        
-        print(data)
 
         serializer = MedicalCenterRequestSerializer(data=data)
         if serializer.is_valid():
@@ -121,7 +120,7 @@ class RequestToMedicalCenterView(APIView):
         user, patient = getPatientByID(payload=payload)
         # get patient requests
         try:
-            requests = MedicalCenterRequest.objects.filter( patient = patient.id )
+            instance = MedicalCenterRequest.objects.filter( patient = patient.id )
         except:
             return Response (
                 {
@@ -130,12 +129,81 @@ class RequestToMedicalCenterView(APIView):
                 status = status.HTTP_404_NOT_FOUND
             )
     
-        serializer = MedicalCenterRequestSerializer(requests, many = True)
+        serializer = MedicalCenterRequestViewSerializer(instance, many = True)
+
+        requests = []
+        for request in serializer.data:
+            print(request)
+            data = {
+                "id" : request["id"],
+                "medical_center": request["medical_center"],
+                "created_at": request["created_at"],
+                "speciality":request["speciality"]["name"],
+                "procedure":request["procedure"]["name"]
+            }
+            requests.append(data)
+        
 
         return Response(
                     {
-                        "requests" : serializer.data,
+                        "requests" : requests,
                     },
                     status=status.HTTP_200_OK
                 )   
 
+class RequestView(APIView):
+    def get(self, request, id):
+        token       = request.COOKIES.get("jwt")
+        payload     = isTokenValid(token=token)
+
+        user, patient = getPatientByID(payload=payload)
+        # get patient specified request
+        try:
+            request = MedicalCenterRequest.objects.get( id=id )
+        except:
+            return Response (
+                {
+                    "message" : "Request is not found!" 
+                },
+                status = status.HTTP_404_NOT_FOUND
+            )
+    
+        serializer = MedicalCenterRequestViewSerializer(request)
+
+        return Response(
+                    serializer.data,
+                    status=status.HTTP_200_OK
+                )   
+
+
+class RequestToMedicalCenterView(APIView):
+    def post(self, request, medcent_id):
+        print("medical center request")
+        token       = request.COOKIES.get("jwt")
+        payload     = isTokenValid(token=token)
+
+        user, patient = getPatientByID(payload=payload)
+        data = request.data
+
+        data['patient'] = patient.id 
+        data['medical_center'] = medcent_id
+
+        city_object = City.objects.filter(name=data["city"]).first()
+        country_object = Country.objects.filter(code2=data["country"]).first() 
+        data["city"] = city_object.id
+        data["country"] = country_object.id
+        
+        print(data)
+
+        serializer = MedicalCenterRequestSerializer(data=data)
+        if serializer.is_valid():
+            serializer.save()
+            response = Response(
+                {
+                    "message": "Medical Center request is successfully updated.",
+                    "request" : serializer.data,
+                },
+                status=status.HTTP_200_OK
+            )   
+            return response
+        return Response(serializer.errors, status=400)

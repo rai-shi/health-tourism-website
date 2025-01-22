@@ -195,11 +195,29 @@ http://127.0.0.1:8000/medical-centers/filter/?speciality=60
 &center_type=Clin
 
 
-medical-centers/id/ POST -> redirect -> /patient/medical-center-request POST
+medical-centers/id/ POST -> redirect -> /patient/medical-center-request/id POST
+{
+    "speciality"      : 62,
+    "procedure"       : 43,
+    "name"            : "Ayse",
+    "surname"         : "Tak",
+    "gender"        : "w",
+    "birthday"      : "2000-2-7",
+    "phone"         : "+905323936604",
+    "email"         : "aysenurtak1@gmail.com",
+    "country"       : "TR",
+    "city"          : "Samsun",
+    "disease_history"     : "Started on five months ago.",
+    "previous_disease"    : "-",
+    "previous_surgery"    : "-",
+    "previous_treatment"  : "-",
+    "other_comments"      : "-"
+}
+/patient/medical-center-request/ POST
 {
     "medical_center"  : 1,
-    "speciality"      : 60,
-    "procedure"       : 33,
+    "speciality"      : 62,
+    "procedure"       : 43,
     "name"            : "Ayse",
     "surname"         : "Tak",
     "gender"        : "w",
@@ -273,3 +291,6 @@ admin-dashboard/patient/filter/ GET
 http://127.0.0.1:8000/admin-dashboard/patient/filter/?country=TR&city=Samsun
 &country=TR
 &city=Samsun
+
+
+
