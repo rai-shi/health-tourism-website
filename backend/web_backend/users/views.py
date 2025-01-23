@@ -100,6 +100,13 @@ class RegisterView(APIView):
                 'password': openapi.Schema(type=openapi.TYPE_STRING, description='User Password'),
                 'user_type': openapi.Schema(type=openapi.TYPE_STRING, description='User Type (patient or medical-center)'),
             },
+            example={
+                'first_name': "John",
+                'last_name': "Doe",
+                'email': "example@gmail.com",
+                'password': "your_password",
+                'user_type': "patient or medical-center"
+            },
             required=['first_name', 'last_name', 'email', 'password', 'user_type']
         ),
         responses={

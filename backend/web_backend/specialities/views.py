@@ -82,14 +82,17 @@ class SpecialitiesView(APIView):
         # no need to login
 
         try: 
+            # get all specialities record from db
             specialities = Speciality.objects.all()
         except:
+            # if any error occurs response with not found
             return Response(
                 {"detail": "Not found any speciality record!"},
                 status = status.HTTP_404_NOT_FOUND
             )
+        # serialize the data for jsonification
         serializer = SpecialitySerializer(specialities, many= True)
-
+        # prepare response data
         response = Response(
             serializer.data,
             status= status.HTTP_200_OK
@@ -100,8 +103,9 @@ class SpecialitiesView(APIView):
 
 class SpecialityProcedureSelectionView(APIView):
     @swagger_auto_schema(
-        operation_description="After speciality-procedure selection, url redirect to medical-center filtered with selected speciality and procedure (no need to authentication)",
-        operation_id='speciality_procedure_selection',  # Optional: Give a unique ID to this operation
+        operation_description="""After speciality-procedure selection, url redirect to medical-centers list filtered with selected speciality and procedure.
+        specialities/speciality_id/procedure_id -> medical-centers/speciality_id/procedure_id
+        (no need to authentication)""",
         
         responses={
             200: openapi.Response(
@@ -130,9 +134,12 @@ class SpecialityProcedureSelectionView(APIView):
             )
         }
     )
-    def get(self, request, speciality_id, procedure_id):
+    def get(self, request, speciality_id:int, procedure_id:int):
 
+        # if url parameters exist 
         if speciality_id and procedure_id:
+            # redirect to medical-centers list view which is medical centers filtered with specified speciality and procedure 
+            # centers.urls -> medical-centers/<int:speciality_id>/<int:procedure_id> (SpecialityBasedFilteredMedicalCentersView)
             new_url = f"/medical-centers/{speciality_id}/{procedure_id}"
             return redirect(new_url)
         

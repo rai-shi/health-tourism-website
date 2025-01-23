@@ -49,13 +49,18 @@ users/update-email
 "new_email" : "biri@example.com"
 }
 
-patient/update-personal-info 
+patient/me POST
 {
     "gender": "w",
     "birthday": "2000-2-7",
     "phone_number": "+905323936604",
     "country": "TR",
     "city": "Samsun"
+}
+{
+    "gender": "w",
+    "birthday": "2000-3-11",
+    "phone_number": "+905061400604"
 }
 
 medical-center/profile PUT
@@ -213,7 +218,7 @@ medical-centers/id/ POST -> redirect -> /patient/medical-center-request/id POST
     "previous_treatment"  : "-",
     "other_comments"      : "-"
 }
-/patient/medical-center-request/ POST
+/patient/requests/ POST
 {
     "medical_center"  : 1,
     "speciality"      : 62,
