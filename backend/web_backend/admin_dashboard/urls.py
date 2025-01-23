@@ -11,8 +11,7 @@ urlpatterns = [
     # GET 
     path("users/", AdminUsersView.as_view(), name="users-list"),
 
-    path("users/create/", AdminUserCreateView.as_view(), name="user-create"),
-
+    # path("users/create/", AdminUserCreateView.as_view(), name="user-create"),
 
     # GET, POST 
     path("specialities/", AdminSpecialitiesView.as_view(), name="specialities"),

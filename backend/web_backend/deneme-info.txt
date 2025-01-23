@@ -350,3 +350,65 @@ http://127.0.0.1:8000/admin-dashboard/patient/filter/?country=TR&city=Samsun
             )
         }
     )
+
+    @swagger_auto_schema(
+        operation_description="Specialities List Endpoint, (no need to authentication)",
+        responses={
+            200: openapi.Response(
+                description="Specialities List Successfully Created",
+                schema=openapi.Schema(
+                    type=openapi.TYPE_ARRAY,
+                    items=openapi.Schema(
+                        type=openapi.TYPE_OBJECT,
+                        properties={
+                            'id': openapi.Schema(type=openapi.TYPE_INTEGER),
+                            'name': openapi.Schema(type=openapi.TYPE_STRING),
+                            'code': openapi.Schema(type=openapi.TYPE_STRING),
+                            'procedures': openapi.Schema(
+                                type=openapi.TYPE_ARRAY,
+                                items=openapi.Schema(
+                                    type=openapi.TYPE_OBJECT,
+                                    properties={
+                                        'id': openapi.Schema(type=openapi.TYPE_INTEGER),
+                                        'name': openapi.Schema(type=openapi.TYPE_STRING),
+                                        'code': openapi.Schema(type=openapi.TYPE_STRING)
+                                    }
+                                )
+                            )
+                        }
+                    ),
+                    example=[
+                                {
+                                    "id": 58,
+                                    "name": "Addiction Treatment",
+                                    "code": "AT",
+                                    "procedures": [
+                                        {
+                                            "id": 2,
+                                            "name": "Alcohol addiction treatment",
+                                            "code": "AT-1"
+                                        },
+                                        {
+                                            "id": 3,
+                                            "name": "Drug addiction treatment",
+                                            "code": "AT-2"
+                                        },
+                                    ]
+                                }
+                            ]
+                )
+            ),
+            404: openapi.Response(
+                description="Speciality not found",
+                schema=openapi.Schema(
+                    type=openapi.TYPE_OBJECT,
+                    properties={
+                        'detail': openapi.Schema(type=openapi.TYPE_STRING, description='Error details')
+                    },
+                    example={
+                        "detail": "Not found any speciality record!"
+                    }
+                )
+            )
+        }
+    )

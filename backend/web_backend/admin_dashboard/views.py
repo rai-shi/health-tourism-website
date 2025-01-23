@@ -144,7 +144,7 @@ class AdminUsersView(APIView):
 
         return Response(
                             users_dict,
-                            status=status.HTTP_201_CREATED
+                            status=status.HTTP_200_OK
                         )
     
 class AdminSpecialitiesView(APIView):
@@ -213,7 +213,7 @@ class AdminSpecialitiesView(APIView):
         )
         return response
     
-    def delete(self, request, id):
+    def delete(self, request, id=None):
         token = request.COOKIES.get("jwt")
         payload = isTokenValid(token=token)
         user = getUserByID(payload)
