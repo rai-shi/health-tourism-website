@@ -6,6 +6,7 @@ from rest_framework.response import Response
 from rest_framework.exceptions import AuthenticationFailed, ValidationError
 from rest_framework import status
 from rest_framework_simplejwt.tokens import RefreshToken
+from django.contrib.auth import login, logout, authenticate
 
 # swagger documentation libs
 from drf_yasg import openapi
@@ -239,7 +240,11 @@ class LoginView(APIView):
         user = getUserByEmail(email=email)
         # verify password
         checkPassword(user=user, password=password)
-        
+
+        # authenticate and login with django auth
+        django_user = authenticate(request=request, email=email, password=password)
+        login(request=request, user=django_user)
+
         # JWT configuration
         token = generateToken(user= user)
         response = Response()
@@ -271,11 +276,14 @@ class LogoutView(APIView):
     
     def post(self, request):
         response = Response()
+        # delete token from cookies
         response.delete_cookie("jwt")
         response.data= {
             "message": "Successfully logout."
         }
         response.status_code = status.HTTP_200_OK
+        # logout with django auth
+        logout(request=request)
         return response
     
 # ! email gönderimi ekle
