@@ -1,38 +1,58 @@
-from django.shortcuts import render
 from django.conf import settings
 
+# django validations and auth methods
+from django.core.validators import EmailValidator
+from django.core.exceptions import ValidationError as DjangoValidationError
+from django.contrib.auth import login, logout, authenticate
+
+# rest framework dependencies
 from rest_framework.views import APIView
 from rest_framework.response import Response
-from rest_framework.exceptions import AuthenticationFailed, ValidationError
 from rest_framework import status
-from rest_framework_simplejwt.tokens import RefreshToken
-from django.contrib.auth import login, logout, authenticate
 
 # swagger documentation libs
 from drf_yasg import openapi
 from drf_yasg.utils import swagger_auto_schema
 
-from django.core.validators import EmailValidator
-from django.core.exceptions import ValidationError as DjangoValidationError
-
-import jwt, datetime, json, environ, os
-
+# db models and their serializers
 from .serializers import UserSerializers
 from .models import User
 from patient.models import Patient
 from medical_centers.models import MedicalCenter
-from medical_centers.models import Speciality, Procedure, HealthInstitutions
-from medical_centers.models import Doctor
-from medical_centers.models import MedicalCenterPhotos, MedicalCenterVideos
 
-from django.shortcuts import redirect
-from django.urls import reverse
+# other requirements
+import jwt, datetime, environ, os
+
 env = environ.Env()
 environ.Env.read_env(os.path.join(settings.BASE_DIR, '.env'))
 
 
-def generateToken(user):
-    # jwt access token generation
+"""
+users views.py file contains fundamental and same user methods same for each user role
+like registering, login, logout, change password and change email
+
+other services are
+generateToken id for generating JWT token
+getUserByEmail gets user filtered by email
+checkPassword checks if user password and given password are same
+isTokenValid checks JWT token expired or valid
+getUserByID gets user with the id provided in JWT Token Payload
+
+each function is explained with swagger and comment block
+"""
+
+
+def generateToken(user:User)->str:
+    """
+    Genaretes JWT Token with user id
+
+    Token expires after 60 minutes
+
+    Returns generated jwt token as a string.
+
+    params:
+        user: object of the User Model
+    """
     payload = {
         "id": user.id,
         "exp": datetime.datetime.now() + datetime.timedelta(minutes=60),
@@ -42,7 +62,13 @@ def generateToken(user):
     token = jwt.encode(payload, env("JWT_SECRET"), algorithm="HS256")
     return token
 
-def getUserByEmail(email):
+def getUserByEmail(email:str) -> User|Response:
+    """
+    returns User if there is any user with provided email or returns 404 Response
+
+    params:
+    email : user provided email as str
+    """
     user = User.objects.filter(email=email).first()
     if user is None:
         # raise AuthenticationFailed("User not found!")
@@ -52,7 +78,16 @@ def getUserByEmail(email):
         )
     return user
 
-def checkPassword(user, password):
+def checkPassword(user:User, password:str) -> None|Response:
+    """
+    Checks provided user's email and provided password is same 
+
+    If not then returns 401 Response
+
+    params:
+        user        : object of User Model
+        password    : str 
+    """
     if not user.check_password(password):
         # raise AuthenticationFailed("Incorrect password!")
         return Response(
@@ -60,9 +95,19 @@ def checkPassword(user, password):
             status= status.HTTP_401_UNAUTHORIZED
         )
 
-def isTokenValid(token):
+def isTokenValid(token:str)-> dict|Response:
+    """
+    Decodes provided JWT Token to payload.
+
+    If token is valid or provided returns payload, in else case returns 401 Response
+
+    Return param:
+        payload : dict {'id', 'exp', 'iat'}
+
+    params:
+        token : JWT token as a str  
+    """
     if not token:
-        # raise AuthenticationFailed("Unauthenticated!")
         return Response(
             {"detail": "Authentication token is missing."},
             status= status.HTTP_401_UNAUTHORIZED
@@ -70,17 +115,24 @@ def isTokenValid(token):
     try:
         payload = jwt.decode(token, env("JWT_SECRET"), algorithms=["HS256"])
     except jwt.ExpiredSignatureError:
-        # raise AuthenticationFailed("Unauthenticated!")
         return Response(
             {"detail": "Invalid or expired token."},
             status= status.HTTP_401_UNAUTHORIZED
         )
+    print(payload)
     return payload
 
-def getUserByID(payload):
+def getUserByID(payload:dict) -> User|Response :
+    """
+    Returns User with the id provided in payload.
+
+    If there is no User with the ID the returns 404 Response
+
+    params:
+        payload : Decoded JWT Token as a dict
+    """
     user = User.objects.filter(id=payload["id"]).first()
     if not user:
-        # raise AuthenticationFailed("User not found!")
         return Response(
                 {"detail": "User not found!"},
                 status= status.HTTP_404_NOT_FOUND
@@ -261,6 +313,7 @@ class LoginView(APIView):
             "jwt": token
         }
         return response
+
 
 class LogoutView(APIView):
     @swagger_auto_schema(

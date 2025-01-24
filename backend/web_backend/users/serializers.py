@@ -3,6 +3,24 @@ from django.contrib.auth.password_validation import validate_password
 from .models import User
 
 class UserSerializers(serializers.ModelSerializer):
+    """
+    User Serializer
+
+    Can be used for creating, updating and serializing the retrieved data
+
+    parameters: 
+        first_name, 
+        last_name, 
+        email, 
+        password, 
+        is_staff
+
+    return parameters
+        first_name, 
+        last_name, 
+        email, 
+        is_staff
+    """
     class Meta:
         model = User 
         fields = ["first_name", "last_name", "email", "password", "is_staff"]
