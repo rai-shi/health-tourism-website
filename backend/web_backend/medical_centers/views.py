@@ -2,6 +2,7 @@
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework import status
+from rest_framework.exceptions import NotFound
 
 # db models, serializers and required views
 # from users
@@ -30,15 +31,27 @@ from django.shortcuts import redirect
 
 
 
-def getMedicalCenterByID(payload):
-    user = getUserByID(payload=payload)
-    med_cent = MedicalCenter.objects.filter(user=user.id).first()
+def getMedicalCenterByID(payload:dict) -> tuple:
+    """
+    Gets MedicalCenter with the ID provided in the payload and returns it.
+    
+    If any MedicalCenter is not found then raise NotFound(404)
 
+    params:
+        payload : dict {'id', 'exp', 'iat'}
+    return params:
+        tuple (User, MedicalCenter)
+            User : object of User Model
+            MedicalCenter : object of MedicalCenter Model
+    """
+    # gets User with users.views.GetUserByID method
+    user = getUserByID(payload=payload)
+    
+    # find MedicalCenter with linked User ID
+    # USer model and MedicalCenter model are in OneToOne relation.
+    med_cent = MedicalCenter.objects.filter(user=user.id).first()
     if not med_cent:
-        return Response(
-                {"detail":"User is not found"},
-                status=status.HTTP_404_NOT_FOUND
-            )
+        raise NotFound("Medical Center not found!")
     return (user, med_cent)
     # return redirect("/users/register")
     
