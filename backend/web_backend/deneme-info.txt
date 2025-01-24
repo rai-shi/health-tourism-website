@@ -27,11 +27,11 @@ users/login
  "email": "ayse1@gmail.com",
 "password": "930615Fly"
 }
-{
+{ -> 11 id
  "email" : "medical@gmail.com",
 "password" : "930615Fly"
 }
-{
+{ -> 13 id
  "email" : "hospital@gmail.com",
 "password" : "930615Fly"
 }
@@ -65,10 +65,10 @@ patient/me POST
 
 medical-center/profile PUT
 {
-    "user": 10,
+    "user": 11,
     "center_name": "Awesome Medical Center",
     "center_type": "Hosp",
-    "city": "IST", / 1
+    "city": "İSTANBUL", 
     "contact_number": "+905555555555",
     "mail_address": "info@medicalcenter.com",
     "web_site": "https://medicalcenter.com",
@@ -76,7 +76,21 @@ medical-center/profile PUT
     "overview_text": "Details about the medical center...",
     "specialities": [5, 10],
     "procedures": [12, 1],
-    "contracted_health_institutions": [1, 2, 3]
+    "contracted_health_institutions": [2, 3]
+}
+{
+    "user": 13,
+    "center_name": "Grand Clinic",
+    "center_type": "Clin",
+    "city": "SAMSUN", 
+    "contact_number": "+905555555555",
+    "mail_address": "info@medicalcenter.com",
+    "web_site": "https://medicalcenter.com",
+    "preview_text": "Lorem ipsum...",
+    "overview_text": "Details about the linic...",
+    "specialities": [63, 64, 71, 95],
+    "procedures": [47,48,49,51,52,53, 89, 90, 91, 93, 102],
+    "contracted_health_institutions": [2, 3, 4]
 }
 
 medical-center/profile PATCH change some of these infos

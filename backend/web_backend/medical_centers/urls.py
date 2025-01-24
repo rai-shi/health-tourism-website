@@ -6,10 +6,10 @@ urlpatterns = [
     # GET, PUT, PATCH
     path('profile/', MedicalCenterView.as_view(), name="profile"),  
 
-    # GET, POST, PATCH, DELETE  
+    # GET, POST, DELETE  
     path('profile/doctors/', MedicalCenterDoctorsView.as_view(), name="doctors"),
     # GET, DELETE, PATCH
-    path('profile/doctors/<int:pk>/', MedicalCenterDoctorsView.as_view(), name="doctor-detail"),
+    path('profile/doctors/<int:pk>/', MedicalCenterDoctorView.as_view(), name="doctor-detail"),
     
     # GET, PUT, DELETE
     path('profile/specialities/', MedicalCenterSpecialitiesView.as_view(), name="medcent-specialities"),                  
