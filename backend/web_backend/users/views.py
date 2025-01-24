@@ -9,6 +9,7 @@ from django.contrib.auth import login, logout, authenticate
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework import status
+from rest_framework.exceptions import AuthenticationFailed, NotFound
 
 # swagger documentation libs
 from drf_yasg import openapi
@@ -62,44 +63,36 @@ def generateToken(user:User)->str:
     token = jwt.encode(payload, env("JWT_SECRET"), algorithm="HS256")
     return token
 
-def getUserByEmail(email:str) -> User|Response:
+def getUserByEmail(email:str) -> User|AuthenticationFailed:
     """
-    returns User if there is any user with provided email or returns 404 Response
+    returns User if there is any user with provided email or raise AuthenticationFailed
 
     params:
     email : user provided email as str
     """
     user = User.objects.filter(email=email).first()
     if user is None:
-        # raise AuthenticationFailed("User not found!")
-        return Response(
-            {"detail": "User not found!"},
-            status= status.HTTP_404_NOT_FOUND
-        )
+        raise AuthenticationFailed("User not found!")
     return user
 
-def checkPassword(user:User, password:str) -> None|Response:
+def checkPassword(user:User, password:str) -> None|AuthenticationFailed:
     """
     Checks provided user's email and provided password is same 
 
-    If not then returns 401 Response
+    If not then raise AuthenticationFailed
 
     params:
         user        : object of User Model
         password    : str 
     """
     if not user.check_password(password):
-        # raise AuthenticationFailed("Incorrect password!")
-        return Response(
-            {"detail": "Incorrect password!"},
-            status= status.HTTP_401_UNAUTHORIZED
-        )
+        raise AuthenticationFailed("Incorrect password!")
 
-def isTokenValid(token:str)-> dict|Response:
+def isTokenValid(token:str)-> dict|AuthenticationFailed|NotFound:
     """
     Decodes provided JWT Token to payload.
 
-    If token is valid or provided returns payload, in else case returns 401 Response
+    If token is valid or provided returns payload, in else case raise NotFound or AuthenticationFailed
 
     Return param:
         payload : dict {'id', 'exp', 'iat'}
@@ -108,35 +101,25 @@ def isTokenValid(token:str)-> dict|Response:
         token : JWT token as a str  
     """
     if not token:
-        return Response(
-            {"detail": "Authentication token is missing."},
-            status= status.HTTP_401_UNAUTHORIZED
-        )
+        raise NotFound("Authentication token is missing.")
     try:
         payload = jwt.decode(token, env("JWT_SECRET"), algorithms=["HS256"])
     except jwt.ExpiredSignatureError:
-        return Response(
-            {"detail": "Invalid or expired token."},
-            status= status.HTTP_401_UNAUTHORIZED
-        )
-    print(payload)
+        raise AuthenticationFailed("Invalid or expired token!")
     return payload
 
-def getUserByID(payload:dict) -> User|Response :
+def getUserByID(payload:dict) -> User|NotFound :
     """
     Returns User with the id provided in payload.
 
-    If there is no User with the ID the returns 404 Response
+    If there is no User with the ID the raise NotFound
 
     params:
         payload : Decoded JWT Token as a dict {'id', 'exp', 'iat'}
     """
     user = User.objects.filter(id=payload["id"]).first()
     if not user:
-        return Response(
-                {"detail": "User not found!"},
-                status= status.HTTP_404_NOT_FOUND
-            )
+        raise NotFound("User is not found!")
     return user
 
 
@@ -264,18 +247,6 @@ class LoginView(APIView):
                     }
                 )
             ),
-            404: openapi.Response(
-                description="Authentication failed.",
-                schema=openapi.Schema(
-                    type=openapi.TYPE_OBJECT,
-                    properties={
-                        'detail': openapi.Schema(type=openapi.TYPE_STRING, description='Error details')
-                    },
-                    example={
-                        'detail': 'User not found!'
-                    }
-                )
-            ),
             401: openapi.Response(
                 description="Authentication failed.",
                 schema=openapi.Schema(
@@ -284,7 +255,10 @@ class LoginView(APIView):
                         'detail': openapi.Schema(type=openapi.TYPE_STRING, description='Error details')
                     },
                     example={
-                        'detail': 'Incorrect password.'
+                        'detail': [
+                            'User not found!',
+                            'Incorrect password.'
+                        ]
                     }
                 )
             )
@@ -380,7 +354,10 @@ class ChangePasswordView(APIView):
                         'detail': openapi.Schema(type=openapi.TYPE_STRING, description='Error details')
                     },
                     example={
-                        "detail": "New passwords do not match."
+                        "detail": [ 
+                            "New passwords do not match.",
+                            "Old password validation failed."
+                            ]
                     }
                 )
             ),
@@ -392,20 +369,9 @@ class ChangePasswordView(APIView):
                         'detail': openapi.Schema(type=openapi.TYPE_STRING, description='Error details')
                     },
                     example={
-                        "detail": "Authentication token is missing.",
-                        "detail": "Invalid or expired token."
-                    }
-                )
-            ),
-            403: openapi.Response(
-                description="Validation error.",
-                schema=openapi.Schema(
-                    type=openapi.TYPE_OBJECT,
-                    properties={
-                        'detail': openapi.Schema(type=openapi.TYPE_STRING, description='Error details')
-                    },
-                    example={
-                        "detail": "Old password validation failed."
+                        "detail": [
+                            "Invalid or expired token."
+                       ],
                     }
                 )
             ),
@@ -417,7 +383,10 @@ class ChangePasswordView(APIView):
                         'detail': openapi.Schema(type=openapi.TYPE_STRING, description='Error details')
                     },
                     example={
-                        "detail": "User not found!"
+                        "detail": [
+                            "User not found!", 
+                            "Authentication token is missing."
+                        ]
                     }
                 )
             ),
@@ -441,7 +410,7 @@ class ChangePasswordView(APIView):
             # raise AuthenticationFailed("Old password is incorrect!")
             return Response(
                 {"detail": "Old password validation failed."},
-                status= status.HTTP_403_FORBIDDEN
+                status= status.HTTP_400_BAD_REQUEST
             )
         
         # Check if the new password pair is matching
@@ -513,12 +482,11 @@ class UpdateEmailView(APIView):
                         'detail': openapi.Schema(type=openapi.TYPE_STRING, description='Error details')
                     },
                     example={
-                        "detail": "Authentication token is missing.",
                         "detail": "Invalid or expired token."
                     }
                 )
             ),
-            403: openapi.Response(
+            400: openapi.Response(
                 description="Validation error.",
                 schema=openapi.Schema(
                     type=openapi.TYPE_OBJECT,
@@ -526,9 +494,10 @@ class UpdateEmailView(APIView):
                         'detail': openapi.Schema(type=openapi.TYPE_STRING, description='Error details')
                     },
                     example={
-                        "detail": "Old password validation failed.",
-                        "detail": "The new email address is not valid.",
-                        "detail": "This email is already in use.",
+                        "detail": [
+                            "Old password validation failed.",
+                           "The new email address is not valid.",
+                            "This email is already in use." ]
                     }
                 )
             ),
@@ -540,7 +509,7 @@ class UpdateEmailView(APIView):
                         'detail': openapi.Schema(type=openapi.TYPE_STRING, description='Error details')
                     },
                     example={
-                        "detail": "User not found!",
+                        "detail": ["User not found!", "Authentication token is missing.",],
                     }
                 )
             )
@@ -564,7 +533,7 @@ class UpdateEmailView(APIView):
             # raise AuthenticationFailed("Password is incorrect!")
             return Response(
                 {"detail": "Old password validation failed."},
-                status= status.HTTP_403_FORBIDDEN
+                status= status.HTTP_400_BAD_REQUEST
             )
         # Validate new email format
         try:
@@ -574,7 +543,7 @@ class UpdateEmailView(APIView):
             # raise ValidationError("The new email address is not valid.")
             return Response(
                 {"detail": "The new email address is not valid."},
-                status= status.HTTP_403_FORBIDDEN
+                status= status.HTTP_400_BAD_REQUEST
             )
 
         # Check if the new email is already taken
@@ -582,7 +551,7 @@ class UpdateEmailView(APIView):
             # raise ValidationError("This email is already in use.")
             return Response(
                 {"detail": "This email is already in use."},
-                status= status.HTTP_403_FORBIDDEN
+                status= status.HTTP_400_BAD_REQUEST
             )
 
         # Update the email

@@ -17,13 +17,13 @@ from drf_yasg.utils import swagger_auto_schema
 from django.shortcuts import redirect
 
 """
-users views.py file contains 
+centers views.py file contains 
     all medical center preview list endpoints, 
     specific medical center overview endpoints
     redirect endpoint for specific medical center request
     speciality-prcedure selected medical center preview list endpoints
     and lastly filtered medical center preview list endpoints
-    
+
 No endpoint requires authentication except MedicalCentersByIDView POST method
 
 each function is explained with swagger and comment block

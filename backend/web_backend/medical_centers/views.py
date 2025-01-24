@@ -1,32 +1,76 @@
-from django.shortcuts import render
-
+# rest framework requirements
 from rest_framework.views import APIView
 from rest_framework.response import Response
-from rest_framework.exceptions import AuthenticationFailed, ValidationError
 from rest_framework import status
 
-from users.views import *
-from .models import *
-from .serializers import *
+# db models, serializers and required views
+# from users
+from users.views import getUserByID, isTokenValid
+from users.serializers import UserSerializers
+# from specialities
+from specialities.serializers import ProcedureSerializer
+# from patient
 from patient.models import MedicalCenterRequest
 from patient.serializers import MedicalCenterRequestSerializer
+# from inner path
+from .models import MedicalCenter, Doctor
+from .models import MedicalCenterPhotos, MedicalCenterVideos
 
-from django.shortcuts import redirect
-from django.urls import reverse
+from .serializers import MedicalCenterSerializer, MedicalCenterUpdateSerializer
+from .serializers import DoctorSerializer
+from .serializers import MedicalCenterSpecialitySerializer, MedicalCenterSpecialityUpdateSerializer
+from .serializers import HealthInstitutionsSerializer, MedicalCenterHealthInstitutionsUpdateSerializer
+from .serializers import MedicalCenterVideosSerializer, MedicalCenterPhotosSerializer
 
 # swagger documentation libs
 from drf_yasg import openapi
 from drf_yasg.utils import swagger_auto_schema
 
+from django.shortcuts import redirect
+
+
 
 def getMedicalCenterByID(payload):
     user = getUserByID(payload=payload)
     med_cent = MedicalCenter.objects.filter(user=user.id).first()
+
     if not med_cent:
-        # return redirect(reverse("register"))
-        raise AuthenticationFailed("Medical center is not found!")
-    
+        return Response(
+                {"detail":"User is not found"},
+                status=status.HTTP_404_NOT_FOUND
+            )
     return (user, med_cent)
+    # return redirect("/users/register")
+    
+    
+
+def DeleteSpeciality(medcent, specilality_pk):
+    try: 
+        speciality = medcent.specialities.filter(id= specilality_pk).first()
+        # name = speciality.name
+
+        procedures = medcent.procedures.filter(speciality=specilality_pk)
+        for procedure in procedures:
+            procedure.delete()
+        speciality.delete()
+
+    except:
+        return Response(
+                    {"message": "not found"},
+                    status=status.HTTP_404_NOT_FOUND
+        )
+   
+def DeleteProcedure(medcent, procedure_pk):
+    try: 
+        procedure = medcent.procedures.get(id=procedure_pk)
+        # name = procedure.name
+        procedure.delete()
+    except:
+        return Response(
+                    {"message": "not found"},
+                    status=status.HTTP_404_NOT_FOUND
+        )
+    
 
 class MedicalCenterView(APIView):
     # list all infos
@@ -187,23 +231,7 @@ class MedicalCenterDoctorsView(APIView):
             status=status.HTTP_200_OK
         )
 
-
-def DeleteSpeciality(medcent, specilality_pk):
-    try: 
-        speciality = medcent.specialities.filter(id= specilality_pk).first()
-        # name = speciality.name
-
-        procedures = medcent.procedures.filter(speciality=specilality_pk)
-        for procedure in procedures:
-            procedure.delete()
-        speciality.delete()
-
-    except:
-        return Response(
-                    {"message": "not found"},
-                    status=status.HTTP_404_NOT_FOUND
-        )
-    
+ 
 class MedicalCenterSpecialitiesView(APIView):
     def get(self, request, speciality_pk=None):
 
@@ -274,16 +302,6 @@ class MedicalCenterSpecialitiesView(APIView):
             status=status.HTTP_200_OK
         )
 
-def DeleteProcedure(medcent, procedure_pk):
-    try: 
-        procedure = medcent.procedures.get(id=procedure_pk)
-        # name = procedure.name
-        procedure.delete()
-    except:
-        return Response(
-                    {"message": "not found"},
-                    status=status.HTTP_404_NOT_FOUND
-        )
 
 class MedicalCenterProceduresView(APIView):
     def get(self, request, speciality_pk, procedure_pk):
