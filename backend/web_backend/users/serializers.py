@@ -8,14 +8,14 @@ class UserSerializers(serializers.ModelSerializer):
 
     Can be used for creating, updating and serializing the retrieved data
 
-    parameters: 
+    data: 
         first_name, 
         last_name, 
         email, 
         password, 
         is_staff
 
-    return parameters
+    return data
         first_name, 
         last_name, 
         email, 

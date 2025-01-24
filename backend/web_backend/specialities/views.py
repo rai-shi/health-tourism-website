@@ -1,21 +1,28 @@
-from django.shortcuts import render
-from django.conf import settings
-
+# rest framework dependencies
 from rest_framework.views import APIView
 from rest_framework.response import Response
-from rest_framework.exceptions import AuthenticationFailed, ValidationError
 from rest_framework import status
-from rest_framework_simplejwt.tokens import RefreshToken
 
-from users.views import *
-from medical_centers.models import Speciality, Procedure
-from .serializers import *
+# db models and their serializers
+from medical_centers.models import Speciality
+from .serializers import SpecialitySerializer
+
+# swagger documentation libs
+from drf_yasg import openapi
+from drf_yasg.utils import swagger_auto_schema
 
 from django.shortcuts import redirect
-from django.urls import reverse
+
+"""
+specialities view.py file contains all speciality list endpoint and speciality-procedure selection endpoint
+SpecialitiesView get api is return all speciality list with their procedures
+SpecialityProcedureSelectionView get is redrect to /medical-centers/{speciality_id}/{procedure_id} url 
+
+each function is explained with swagger and comment block
+"""
+
 
 class SpecialitiesView(APIView):
-
     @swagger_auto_schema(
         operation_description="Specialities List Endpoint, (no need to authentication)",
         responses={
@@ -77,7 +84,6 @@ class SpecialitiesView(APIView):
             )
         }
     )
-
     def get(self, request):
         # no need to login
 
@@ -100,7 +106,6 @@ class SpecialitiesView(APIView):
         return response
 
     
-
 class SpecialityProcedureSelectionView(APIView):
     @swagger_auto_schema(
         operation_description="""After speciality-procedure selection, url redirect to medical-centers list filtered with selected speciality and procedure.

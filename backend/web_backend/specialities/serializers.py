@@ -1,8 +1,15 @@
 from rest_framework import serializers
 from medical_centers.models import Speciality, Procedure
 
-
 class ProcedureSerializer(serializers.ModelSerializer):
+    """
+    ProcedureSerializer is for serializing the retrieve data, and validating or creating data.
+
+    data:
+        'id', 'name', 'code', 'speciality'
+    return data:
+        'id', 'name', 'code'
+    """
     class Meta:
         model = Procedure
         fields = ['id', 'name', 'code', 'speciality']  
@@ -10,6 +17,16 @@ class ProcedureSerializer(serializers.ModelSerializer):
             "speciality": {"write_only": True}
         }
 class SpecialitySerializer(serializers.ModelSerializer):
+
+    """
+    SpecialitySerializer is for serializing the retrieve data, and validating or creating data.
+
+    data:
+        'id', 'name', 'code'
+    return data:
+        'id', 'name', 'code', procedures
+    """
+
     procedures = serializers.SerializerMethodField()
 
     class Meta:
@@ -20,6 +37,8 @@ class SpecialitySerializer(serializers.ModelSerializer):
         }
 
     def get_procedures(self, obj):
-        # İlgili Speciality'ye bağlı Procedures
+        """
+            Retrieves Procedures linked to the relevant Speciality
+        """
         procedures = Procedure.objects.filter(speciality=obj)
         return ProcedureSerializer(procedures, many=True).data
