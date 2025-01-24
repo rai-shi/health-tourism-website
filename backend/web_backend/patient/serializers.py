@@ -1,10 +1,25 @@
 from rest_framework import serializers
 from .models import Patient
 from .models import MedicalCenterRequest, MedicalCenterRequestFile
-import time
 
 class PatientSerializers(serializers.ModelSerializer):
-    # return field with their __str__ return 
+    """
+    PatientSerializers can be used for validation creating and serializing data.
+
+    data:
+        "gender", 
+        "birthday", 
+        "phone_number", 
+        "country", 
+        "city"
+    return datas:
+        "gender", 
+        "birthday", 
+        "phone_number", 
+        "country", 
+        "city",
+        "created_at"
+    """
     country = serializers.StringRelatedField()  
     city = serializers.StringRelatedField()  
 
@@ -30,12 +45,22 @@ class MedicalCenterRequestFileSerializer(serializers.ModelSerializer):
 
 class MedicalCenterRequestSerializer(serializers.ModelSerializer):
     # files = MedicalCenterRequestFileSerializer(many=True, required=False)
-    # city = serializers.SerializerMethodField()
-    # country = serializers.SerializerMethodField()
-    # speciality = serializers.SerializerMethodField()
-    # procedure = serializers.SerializerMethodField()
 
-    class Meta:
+    """
+    Medical Center Request Serializer
+
+    Can be used for only creating MedicalCenterRequest. Do not user for viewing.
+
+    data: 
+        'id', 'patient', 'medical_center', 'speciality', 'procedure',
+        'name', 'surname', 'gender', 'birthday', 'phone', 'email',
+        'country', 'city', 
+        'disease_history', 'previous_disease', 'previous_surgery',
+        'previous_treatment', 'other_comments', 
+        
+        later 'files' will be added
+    """
+    class Meta:        
         model = MedicalCenterRequest
         fields = [
             'id', 'patient', 'medical_center', 'speciality', 'procedure',
@@ -45,28 +70,25 @@ class MedicalCenterRequestSerializer(serializers.ModelSerializer):
             'previous_treatment', 'other_comments', 
             # 'files'
         ]
-
-    def get_city(self, obj):
-        return obj.city.name 
     
-    def get_country(self, obj):
-        return obj.country.name  
-    
-    def get_speciality(self, obj):
-        return {
-            "id" : obj.speciality.id, 
-            "name" : obj.speciality.name
-            } 
-    
-    def get_procedure(self, obj):
-        return {
-            "id" : obj.procedure.id, 
-            "name" : obj.procedure.name
-            } 
-    
-
 
 class MedicalCenterRequestViewSerializer(serializers.ModelSerializer):
+    """
+    Medical Center Request Serializer
+
+    Can be used for only viewing MedicalCenterRequest. Just use for serialize the retrieved data.
+
+    return data: 
+        'id', 'patient', 'medical_center', 'speciality', 'procedure',
+            'name', 'surname', 'gender', 'birthday', 'phone', 'email',
+            'country', 'city', 
+            'disease_history', 'previous_disease', 'previous_surgery',
+            'previous_treatment', 'other_comments', 
+            'created_at',
+        
+        later 'files' will be added
+    """
+
     # files = MedicalCenterRequestFileSerializer(many=True, required=False)
     city = serializers.SerializerMethodField()
     country = serializers.SerializerMethodField()

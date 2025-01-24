@@ -3,7 +3,7 @@ from .views import *
 
 urlpatterns = [
 
-    # GET, POST (update)
+    # GET, POST (for updating)
     path("me", 
         PatientView.as_view(), 
         name="me"),

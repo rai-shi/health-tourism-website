@@ -129,7 +129,7 @@ def getUserByID(payload:dict) -> User|Response :
     If there is no User with the ID the returns 404 Response
 
     params:
-        payload : Decoded JWT Token as a dict
+        payload : Decoded JWT Token as a dict {'id', 'exp', 'iat'}
     """
     user = User.objects.filter(id=payload["id"]).first()
     if not user:

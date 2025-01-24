@@ -1,24 +1,51 @@
-from django.shortcuts import render
-from users.views import *
-
+# rest framework dependencies
 from rest_framework.views import APIView
 from rest_framework.response import Response
-# from rest_framework.exceptions import AuthenticationFailed, ValidationError
 from rest_framework import status
 
+# db models, their serializers and views
 from .serializers import PatientSerializers, MedicalCenterRequestSerializer, MedicalCenterRequestViewSerializer
 from .models import Patient, MedicalCenterRequest
-
 from users.serializers import UserSerializers
+from users.views import getUserByID, isTokenValid
 
 from cities_light.models import City, Country
 
+# swagger documentation libs
+from drf_yasg import openapi
+from drf_yasg.utils import swagger_auto_schema
 
-def getPatientByID(payload):
+
+"""
+patient views.py file contains endpoints for profile, medical center request viewing and endpoints for sending request to medical centers
+
+and patient-spesific services are
+getPatientByID gets patient with the id provided in JWT Token Payload
+
+each function is explained with swagger and comment block
+"""
+
+
+def getPatientByID(payload:dict)->tuple:
+    """
+    Gets Patient with the ID provided in the payload and returns it.
+    
+    If any Patient is not found then returns 404 Response
+
+    params:
+        payload : dict {'id', 'exp', 'iat'}
+    return params:
+        tuple (User, Patient)
+            User : object of User Model
+            Patient : object of Patient Model
+    """
+    # gets User with users.views.GetUserByID method
     user = getUserByID(payload=payload)
+
+    # find Patient with linked User ID
+    # USer model and Patient model are in OneToOne relation.
     patient = Patient.objects.filter(user=user.id).first()
     if not patient:
-        # raise AuthenticationFailed("Patient is not found!")
         return Response(
                 {"detail": "Patient not found!"},
                 status= status.HTTP_404_NOT_FOUND
