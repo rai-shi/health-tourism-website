@@ -65,7 +65,7 @@ def generateToken(user:User)->str:
 
 def getUserByEmail(email:str) -> User|AuthenticationFailed:
     """
-    returns User if there is any user with provided email or raise AuthenticationFailed
+    returns User if there is any user with provided email or raise AuthenticationFailed (401)
 
     params:
     email : user provided email as str
@@ -79,7 +79,7 @@ def checkPassword(user:User, password:str) -> None|AuthenticationFailed:
     """
     Checks provided user's email and provided password is same 
 
-    If not then raise AuthenticationFailed
+    If not then raise AuthenticationFailed (401)
 
     params:
         user        : object of User Model
@@ -92,7 +92,7 @@ def isTokenValid(token:str)-> dict|AuthenticationFailed|NotFound:
     """
     Decodes provided JWT Token to payload.
 
-    If token is valid or provided returns payload, in else case raise NotFound or AuthenticationFailed
+    If token is valid or provided returns payload, in else case raise NotFound (404) or AuthenticationFailed (401)
 
     Return param:
         payload : dict {'id', 'exp', 'iat'}
@@ -112,7 +112,7 @@ def getUserByID(payload:dict) -> User|NotFound :
     """
     Returns User with the id provided in payload.
 
-    If there is no User with the ID the raise NotFound
+    If there is no User with the ID the raise NotFound (404)
 
     params:
         payload : Decoded JWT Token as a dict {'id', 'exp', 'iat'}
@@ -158,7 +158,7 @@ class RegisterView(APIView):
                 )
             ),
             400: openapi.Response(
-                description="Registration failed.",
+                description="Bad Request!",
                 schema=openapi.Schema(
                     type=openapi.TYPE_OBJECT,
                     properties={
@@ -169,8 +169,8 @@ class RegisterView(APIView):
                     }
                 )
             ),
-             403: openapi.Response(
-                description="validation error.",
+            403: openapi.Response(
+                description="Forbidden!",
                 schema=openapi.Schema(
                     type=openapi.TYPE_OBJECT,
                     properties={
@@ -475,7 +475,7 @@ class UpdateEmailView(APIView):
                 )
             ),
             401: openapi.Response(
-                description="Unauthorized!",
+                description="AuthenticationFailed!",
                 schema=openapi.Schema(
                     type=openapi.TYPE_OBJECT,
                     properties={
@@ -487,7 +487,7 @@ class UpdateEmailView(APIView):
                 )
             ),
             400: openapi.Response(
-                description="Validation error.",
+                description="Bad Request: Validation error.",
                 schema=openapi.Schema(
                     type=openapi.TYPE_OBJECT,
                     properties={
@@ -502,7 +502,7 @@ class UpdateEmailView(APIView):
                 )
             ),
             404: openapi.Response(
-                description="Unauthorized!",
+                description="Not Found!",
                 schema=openapi.Schema(
                     type=openapi.TYPE_OBJECT,
                     properties={

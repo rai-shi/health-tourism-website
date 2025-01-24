@@ -28,7 +28,7 @@ class SpecialitiesView(APIView):
     @swagger_auto_schema(
         operation_description="Specialities List Endpoint, (no need to authentication)",
         responses={
-            200: openapi.Response(
+            201: openapi.Response(
                 description="Specialities List Successfully Created",
                 schema=openapi.Schema(
                     type=openapi.TYPE_ARRAY,
@@ -73,14 +73,14 @@ class SpecialitiesView(APIView):
                 )
             ),
             404: openapi.Response(
-                description="Speciality not found",
+                description="Not Found",
                 schema=openapi.Schema(
                     type=openapi.TYPE_OBJECT,
                     properties={
                         'detail': openapi.Schema(type=openapi.TYPE_STRING, description='Error details')
                     },
                     example={
-                        "detail": "Not found any speciality record!"
+                        "detail": "Not found any speciality!"
                     }
                 )
             )
@@ -128,7 +128,7 @@ class SpecialityProcedureSelectionView(APIView):
                 )
             ),
             400: openapi.Response(
-                description="Speciality and procedure ID is not provided.",
+                description="Bad Request: Speciality and procedure ID is not provided.",
                 schema=openapi.Schema(
                     type=openapi.TYPE_OBJECT,
                     properties={

@@ -2,6 +2,7 @@
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework import status
+from rest_framework.exceptions import NotFound
 
 # db models, their serializers and views
 from .serializers import PatientSerializers, MedicalCenterRequestSerializer, MedicalCenterRequestViewSerializer
@@ -26,11 +27,11 @@ each function is explained with swagger and comment block
 """
 
 
-def getPatientByID(payload:dict)->tuple:
+def getPatientByID(payload:dict)->tuple|NotFound:
     """
     Gets Patient with the ID provided in the payload and returns it.
     
-    If any Patient is not found then returns 404 Response
+    If any Patient is not found then raise NotFound(404)
 
     params:
         payload : dict {'id', 'exp', 'iat'}
@@ -46,11 +47,7 @@ def getPatientByID(payload:dict)->tuple:
     # USer model and Patient model are in OneToOne relation.
     patient = Patient.objects.filter(user=user.id).first()
     if not patient:
-        return Response(
-                {"detail": "Patient not found!"},
-                status= status.HTTP_404_NOT_FOUND
-            )
-    
+        raise NotFound("Patient not found!")
     return (user, patient)
     
 
@@ -112,19 +109,19 @@ class PatientView(APIView):
                         'detail': openapi.Schema(type=openapi.TYPE_STRING, description='Error details')
                     },
                     example={
-                        "detail": "Authentication token is missing."
+                        "detail": "Invalid or expired token!"
                     }
                 )
             ),
             404: openapi.Response(
-                description="Authentication failed.",
+                description="Not Found!",
                 schema=openapi.Schema(
                     type=openapi.TYPE_OBJECT,
                     properties={
                         'detail': openapi.Schema(type=openapi.TYPE_STRING, description='Error details')
                     },
                     example={
-                        "detail": "Patient not found!"
+                        "detail": ["Patient not found!","Authentication token is missing." ]
                     }
                 )
             )
@@ -184,19 +181,19 @@ class PatientView(APIView):
                         'detail': openapi.Schema(type=openapi.TYPE_STRING, description='Error details')
                     },
                     example={
-                        "detail": "Authentication token is missing."
+                        "detail": "Invalid or expired token!"
                     }
                 )
             ),
             404: openapi.Response(
-                description="Authentication failed.",
+                description="Not Found!",
                 schema=openapi.Schema(
                     type=openapi.TYPE_OBJECT,
                     properties={
                         'detail': openapi.Schema(type=openapi.TYPE_STRING, description='Error details')
                     },
                     example={
-                        "detail": "Patient not found!"
+                        "detail": ["Patient not found!", "Authentication token is missing."]
                     }
                 )
             )
@@ -286,7 +283,7 @@ class RequestsView(APIView):
             }
         ),
         responses={
-            200: openapi.Response(
+            201: openapi.Response(
                 description="Medical Center request is successfully created.",
                 schema=openapi.Schema(
                     type=openapi.TYPE_OBJECT,
@@ -321,19 +318,19 @@ class RequestsView(APIView):
                         'detail': openapi.Schema(type=openapi.TYPE_STRING, description='Error details')
                     },
                     example={
-                        "detail": "Authentication token is missing."
+                        "detail": "Invalid or expired token!"
                     }
                 )
             ),
             404: openapi.Response(
-                description="Authentication failed.",
+                description="Not Found!",
                 schema=openapi.Schema(
                     type=openapi.TYPE_OBJECT,
                     properties={
                         'detail': openapi.Schema(type=openapi.TYPE_STRING, description='Error details')
                     },
                     example={
-                        "detail": "Patient not found!"
+                        "detail": ["Patient not found!", "Authentication token is missing."]
                     }
                 )
             )
@@ -352,8 +349,15 @@ class RequestsView(APIView):
         # append patient id to data
         data['patient'] = patient.id 
         # fix the city and country data
-        city_object = City.objects.filter(name=data["city"]).first()
-        country_object = Country.objects.filter(code2=data["country"]).first() 
+        # Assume that country codes are got -> For Turkey, TR is got.
+        try:
+            city_object = City.objects.filter(name=data["city"]).first()
+            country_object = Country.objects.filter(code2=data["country"]).first()
+        except Exception as e:
+            return Response(
+                {"detail" : f"{e}"},
+                status=status.HTTP_404_NOT_FOUND
+            )
         data["city"] = city_object.id
         data["country"] = country_object.id
         # serialize the data
@@ -418,20 +422,19 @@ class RequestsView(APIView):
                         'detail': openapi.Schema(type=openapi.TYPE_STRING, description='Error details')
                     },
                     example={
-                        "detail": "Authentication token is missing."
+                        "detail": "Invalid or expired token!"
                     }
                 )
             ),
             404: openapi.Response(
-                description="Authentication failed.",
+                description="Not Found!",
                 schema=openapi.Schema(
                     type=openapi.TYPE_OBJECT,
                     properties={
                         'detail': openapi.Schema(type=openapi.TYPE_STRING, description='Error details')
                     },
                     example={
-                        "detail": "Patient not found!",
-                        "detail" : "Requests are not found!" 
+                        "detail": ["Patient not found!", "Requests are not found!", "Authentication token is missing."]
                     }
                 )
             )
@@ -565,20 +568,19 @@ class RequestView(APIView):
                         'detail': openapi.Schema(type=openapi.TYPE_STRING, description='Error details')
                     },
                     example={
-                        "detail": "Authentication token is missing."
+                        "detail": "Invalid or expired token!"
                     }
                 )
             ),
             404: openapi.Response(
-                description="Authentication failed.",
+                description="Not Found!",
                 schema=openapi.Schema(
                     type=openapi.TYPE_OBJECT,
                     properties={
                         'detail': openapi.Schema(type=openapi.TYPE_STRING, description='Error details')
                     },
                     example={
-                        "detail": "Patient not found!",
-                        "detail" : "Request is not found!" 
+                        "detail": ["Patient not found!", "Requests are not found!", "Authentication token is missing."]
                     }
                 )
             )
@@ -659,7 +661,7 @@ class RequestToMedicalCenterView(APIView):
             }
         ),
         responses={
-            200: openapi.Response(
+            201: openapi.Response(
                 description="Medical Center request is successfully created.",
                 schema=openapi.Schema(
                     type=openapi.TYPE_OBJECT,
@@ -694,19 +696,19 @@ class RequestToMedicalCenterView(APIView):
                         'detail': openapi.Schema(type=openapi.TYPE_STRING, description='Error details')
                     },
                     example={
-                        "detail": "Authentication token is missing."
+                        "detail": "Invalid or expired token!"
                     }
                 )
             ),
             404: openapi.Response(
-                description="Authentication failed.",
+                description="Not Found!",
                 schema=openapi.Schema(
                     type=openapi.TYPE_OBJECT,
                     properties={
                         'detail': openapi.Schema(type=openapi.TYPE_STRING, description='Error details')
                     },
                     example={
-                        "detail": "Patient not found!"
+                        "detail": ["Patient not found!", "Authentication token is missing."]
                     }
                 )
             )
@@ -725,11 +727,21 @@ class RequestToMedicalCenterView(APIView):
         # apply patient and medical center ID to data
         data['patient'] = patient.id 
         data['medical_center'] = medcent_id
+
+        # ! If this block needs to be written more than twice, it should be coded as service
         # fix city and country data
-        city_object = City.objects.filter(name=data["city"]).first()
-        country_object = Country.objects.filter(code2=data["country"]).first() 
+        # Assume that country codes are got -> For Turkey, TR is got.
+        try:
+            city_object = City.objects.filter(name=data["city"]).first()
+            country_object = Country.objects.filter(code2=data["country"]).first()
+        except Exception as e:
+            return Response(
+                {"detail" : f"{e}"},
+                status=status.HTTP_404_NOT_FOUND
+            )
         data["city"] = city_object.id
         data["country"] = country_object.id
+
         # serialize the data
         serializer = MedicalCenterRequestSerializer(data=data)
         if serializer.is_valid():
