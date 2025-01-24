@@ -14,9 +14,10 @@ from patient.serializers import MedicalCenterRequestSerializer
 from django.shortcuts import redirect
 from django.urls import reverse
 
+# swagger documentation libs
+from drf_yasg import openapi
+from drf_yasg.utils import swagger_auto_schema
 
-# from django.contrib.auth.decorators import login_required
-# @login_required
 
 def getMedicalCenterByID(payload):
     user = getUserByID(payload=payload)

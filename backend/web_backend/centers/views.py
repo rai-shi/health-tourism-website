@@ -1,19 +1,33 @@
-from django.shortcuts import render
-
+# rest framework dependencies
 from rest_framework.views import APIView
 from rest_framework.response import Response
-from rest_framework.exceptions import AuthenticationFailed, ValidationError
 from rest_framework import status
 
-from users.views import *
-from patient.views import *
-from medical_centers.serializers import *
-from specialities.serializers import SpecialitySerializer
-from .serializers import *
-from medical_centers.models import *
+# db models, their serializers and views
+from users.views import isTokenValid
+from patient.views import getPatientByID
+from medical_centers.serializers import MedicalCenterSerializer
+from .serializers import MedicalCenterListSerializer
+from medical_centers.models import MedicalCenter
+
+# swagger documentation libs
+from drf_yasg import openapi
+from drf_yasg.utils import swagger_auto_schema
 
 from django.shortcuts import redirect
-from django.urls import reverse
+
+"""
+users views.py file contains 
+    all medical center preview list endpoints, 
+    specific medical center overview endpoints
+    redirect endpoint for specific medical center request
+    speciality-prcedure selected medical center preview list endpoints
+    and lastly filtered medical center preview list endpoints
+    
+No endpoint requires authentication except MedicalCentersByIDView POST method
+
+each function is explained with swagger and comment block
+"""
 
 
 class MedicalCentersView(APIView):

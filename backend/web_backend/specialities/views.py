@@ -15,6 +15,8 @@ from django.shortcuts import redirect
 
 """
 specialities view.py file contains all speciality list endpoint and speciality-procedure selection endpoint
+No endpoint requires authentication
+
 SpecialitiesView get api is return all speciality list with their procedures
 SpecialityProcedureSelectionView get is redrect to /medical-centers/{speciality_id}/{procedure_id} url 
 

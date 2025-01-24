@@ -5,7 +5,19 @@ from django.shortcuts import get_object_or_404
 from medical_centers.models import MedicalCenter
 
 class MedicalCenterListSerializer(serializers.ModelSerializer):
-    # custom serializer methods
+    """
+    MedicalCenterListSerializer can be only used for serializing the MedicalCenter data for its preview 
+
+    return params:
+        "id",
+        "center_name",
+        "center_type",
+        "city",
+        "contact_number",
+        "mail_address",
+        "web_site",
+        "preview_text"
+    """
     city = serializers.SerializerMethodField()
     class Meta:
         model = MedicalCenter
