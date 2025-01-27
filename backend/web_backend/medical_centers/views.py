@@ -1529,39 +1529,25 @@ class MedicalCenterHealthInsurancesView(APIView):
 class MedicalCenterHealthInsuranceView(APIView):
     @swagger_auto_schema(
         operation_description="Delete requested contracted health insurance record.",
-        request_body = openapi.Schema(
-            type=openapi.TYPE_OBJECT,
-            properties={
-                "ids": openapi.Schema(
-                    type=openapi.TYPE_ARRAY,
-                    items=openapi.Schema(type=openapi.TYPE_INTEGER),
-                    description="List of health insurance IDs."
-                ),
-            },
-            required=["ids"]
-        ),
+        manual_parameters=[
+            openapi.Parameter(
+                'id',
+                openapi.IN_PATH,
+                description="ID of the requested Insurance",
+                type=openapi.TYPE_INTEGER,
+                required=True
+            )
+        ],
         responses={
             200: openapi.Response(
-                description="Contracted health insurance records successfully deleted.",
+                description="Requested contracted health insurance record successfully deleted.",
                 schema=openapi.Schema(
                     type=openapi.TYPE_OBJECT,
                     properties={
                         'message': openapi.Schema(type=openapi.TYPE_STRING, description='Success message')
                     },
                     example={
-                        "message": "{deletion_count} contracted health insurance successfully deleted."
-                    }
-                )
-            ),
-            400: openapi.Response(
-                description="Bad Request",
-                schema=openapi.Schema(
-                    type=openapi.TYPE_OBJECT,
-                    properties={
-                        'detail': openapi.Schema(type=openapi.TYPE_STRING, description='Error details')
-                    },
-                    example={
-                        "detail": "No IDs provided for deletion!"
+                        "message": "Contracted Health Insurance {name} is successfully deleted."
                     }
                 )
             ),
@@ -1585,50 +1571,32 @@ class MedicalCenterHealthInsuranceView(APIView):
                         'detail': openapi.Schema(type=openapi.TYPE_STRING, description='Error details')
                     },
                     example={
-                        "detail": ["Authentication token is missing.", "Medical Center not found!", "User is not found!", "No matching records found."]
+                        "detail": ["Authentication token is missing.", "Medical Center not found!", "User is not found!", "Requested health insurance record not found!"]
                     }
                 )
             ),
         }
     )
     # delete requested multiple health insurance records at once
-    def delete(self, request, pk=None):
+    def delete(self, request, id):
         token = request.COOKIES.get("jwt")
         payload = isTokenValid(token=token)
         user, medcent = getMedicalCenterByID(payload=payload)
         
-        # spesific insurance will be deleted
-        if pk is not None:
-            try: 
-                insurance = medcent.contracted_health_institutions.get(id=pk)
-                name = insurance.name
-                insurance.delete()
-                return Response(
-                    {"message": f"Contracted Health Insurance {name} is successfully deleted."},
-                    status=status.HTTP_200_OK
-                )
-            except:
-                return Response(
-                            {"message": "not found"},
-                            status=status.HTTP_404_NOT_FOUND
-                )
-    
-        insurance_ids = request.data.get("ids", [])
-        if not insurance_ids:
+        # get requested health insurance and delete
+        try: 
+            insurance = medcent.contracted_health_institutions.get(id=id)
+            name = insurance.name
+            insurance.delete()
             return Response(
-                {"message": "No IDs provided for deletion!"},
-                status=status.HTTP_400_BAD_REQUEST
+                {"message": f"Contracted Health Insurance {name} is successfully deleted."},
+                status=status.HTTP_200_OK
             )
-
-        for id in insurance_ids:
-                insurance_instance = medcent.contracted_health_institutions.get(id=id)
-                insurance_instance.delete()
-        return Response(
-            {"message": f"{len(insurance_ids)} insurances are successfully deleted."},
-            status=status.HTTP_200_OK
-        )
-
-
+        except:
+            return Response(
+                        {"detail": "Requested health insurance record not found!"},
+                        status=status.HTTP_404_NOT_FOUND
+            )
 
 
 class MedicalCenterVideosView(APIView):
