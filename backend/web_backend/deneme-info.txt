@@ -27,7 +27,8 @@ users/login
  "email": "ayse1@gmail.com",
 "password": "930615Fly"
 }
-{ -> 11 id
+-> 11 id
+{ 
  "email" : "medical@gmail.com",
 "password" : "930615Fly"
 }

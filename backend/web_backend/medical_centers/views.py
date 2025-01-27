@@ -57,9 +57,7 @@ def getMedicalCenterByID(payload:dict) -> tuple:
     return (user, med_cent)
     # return redirect("/users/register")
     
-
-
-def DeleteSpeciality(medcent, specilality_pk) -> None|NotFound:
+def DeleteSpeciality(medcent:MedicalCenter, specilality_pk:int) -> None|NotFound:
     """
     Deletes the specified specialty and its procedures of the authenticated medical center.
     
@@ -80,7 +78,7 @@ def DeleteSpeciality(medcent, specilality_pk) -> None|NotFound:
     except:
         raise NotFound("Speciality is not found!")
    
-def DeleteProcedure(medcent, procedure_pk):
+def DeleteProcedure(medcent:MedicalCenter, procedure_pk:int) -> None|NotFound:
     """
     Deletes the specified Procedure of the authenticated medical center.
     
@@ -865,14 +863,14 @@ class MedicalCenterDoctorsView(APIView):
             )
 
         # filter all requested doctors for deletion
-        doctor_ids = Destination.objects.filter(id__in=doctor_ids)
-        if not doctor_ids.exists():
+        doctors = Destination.objects.filter(id__in=doctor_ids)
+        if not doctors.exists():
             return Response(
                 {"detail": "No matching records found."},
                 status=status.HTTP_404_NOT_FOUND,
             )
         # delete them
-        count, _ = doctor_ids.delete() 
+        count, _ = doctors.delete() 
         return Response(
             {"message": f"{count} doctors successfully deleted."},
             status=status.HTTP_200_OK,
@@ -997,7 +995,7 @@ class MedicalCenterDoctorView(APIView):
                             description="Doctor Surname"),
                         'title'             : openapi.Schema(
                             type=openapi.TYPE_STRING,
-                            description="Doctor Academic Title"),
+                            description="Doctor Academic Title ('Dr.', 'Prof. Dr.', 'Assoc. Dr.', 'Asst. Dr.')"),
                         'major'             : openapi.Schema(
                             type=openapi.TYPE_STRING,
                             description="Doctor Major Branch"),
@@ -1158,6 +1156,7 @@ class MedicalCenterDoctorView(APIView):
 
 
 class MedicalCenterSpecialitiesView(APIView):
+
     def get(self, request, speciality_pk=None):
 
         token = request.COOKIES.get("jwt")
@@ -1272,40 +1271,327 @@ class MedicalCenterProceduresView(APIView):
 
 
 class MedicalCenterHealthInsurancesView(APIView):
-    def get(self, request, pk=None):
+
+    @swagger_auto_schema(
+        operation_description="Retrieve authenticated medical center's contracted health insurances list.",
+        responses={
+            200: openapi.Response(
+                description="Successful response with medical center's contracted health insurances list.",
+                schema=openapi.Schema(
+                    type=openapi.TYPE_ARRAY,
+                    items=openapi.Schema(
+                        type=openapi.TYPE_OBJECT,
+                        properties={
+                            'id'                : openapi.Schema(
+                                type=openapi.TYPE_INTEGER,
+                                description="Health Insurance ID"),
+                            'name'              : openapi.Schema(
+                                type=openapi.TYPE_STRING,
+                                description="Health Insurance Name"),
+                            'code'           : openapi.Schema(
+                                type=openapi.TYPE_STRING,
+                                description="Health Insurance Code")
+                        },
+                        examples = [
+                           {
+                                "id": 2,
+                                "name": "Allianz Sigorta",
+                                "code": " Allianz"
+                            },
+                        ]
+                    )
+                )
+            ),
+            401: openapi.Response(
+                description="Authentication Failed!",
+                schema=openapi.Schema(
+                    type=openapi.TYPE_OBJECT,
+                    properties={
+                        'detail': openapi.Schema(type=openapi.TYPE_STRING, description='Error details')
+                    },
+                    example={
+                        "detail": "Invalid or expired token!"
+                    }
+                )
+            ),
+            404: openapi.Response(
+                description="Not Found!",
+                schema=openapi.Schema(
+                    type=openapi.TYPE_OBJECT,
+                    properties={
+                        'detail': openapi.Schema(type=openapi.TYPE_STRING, description='Error details')
+                    },
+                    example={
+                        "detail": ["Authentication token is missing.", "Medical Center not found!", "User is not found!", "Contracted Health Insurences are not found!"]
+                    }
+                )
+            ),
+        }
+    )
+    # get medical center contracted health insurances list
+    def get(self, request):
+        # check if token and user is valid
         token = request.COOKIES.get("jwt")
         payload = isTokenValid(token=token)
         user, medcent = getMedicalCenterByID(payload=payload)
-
+        # get all contracted health insurances list
         try:
             incurances = medcent.contracted_health_institutions.all()
         except:
             return Response(
-                {"message": "Contracted Health Insurences are not found!"},
+                {"detail": "Contracted Health Insurences are not found!"},
                 status=status.HTTP_404_NOT_FOUND
             )
+        # serialize the data
         serializer = HealthInstitutionsSerializer(incurances, many=True) 
         return Response( serializer.data, status=status.HTTP_200_OK )
 
+    @swagger_auto_schema(
+        operation_description="Create new health insurances contract for authenticated medical center.",
+        request_body = openapi.Schema(
+            type=openapi.TYPE_OBJECT,
+            properties={
+                "contracted_health_institutions": openapi.Schema(
+                    type=openapi.TYPE_ARRAY,
+                    items=openapi.Schema(type=openapi.TYPE_INTEGER),
+                    description="Health Insurance Object's ID's"
+                )
+            },
+            required=["contracted_health_institutions"]
+        ),
+        responses={
+            200: openapi.Response(
+                description="Successfully created new health insurance record for authenticated medical center.",
+                schema=openapi.Schema(
+                    type=openapi.TYPE_OBJECT,
+                    properties={
+                        'message': openapi.Schema(type=openapi.TYPE_STRING, description='Success message')
+                    },
+                    example={"message": "New health insurance contraction is successfully added."}
+                )
+            ),
+            400: openapi.Response(
+                description="Bad Request!",
+                schema=openapi.Schema(
+                    type=openapi.TYPE_OBJECT,
+                    properties={
+                        'detail': openapi.Schema(type=openapi.TYPE_STRING, description='Error details')
+                    },
+                    example={
+                        "detail": "Health Insurance data is not valid!"
+                    }
+                )
+            ),
+            401: openapi.Response(
+                description="Authentication Failed!",
+                schema=openapi.Schema(
+                    type=openapi.TYPE_OBJECT,
+                    properties={
+                        'detail': openapi.Schema(type=openapi.TYPE_STRING, description='Error details')
+                    },
+                    example={
+                        "detail": "Invalid or expired token!"
+                    }
+                )
+            ),
+            404: openapi.Response(
+                description="Not Found!",
+                schema=openapi.Schema(
+                    type=openapi.TYPE_OBJECT,
+                    properties={
+                        'detail': openapi.Schema(type=openapi.TYPE_STRING, description='Error details')
+                    },
+                    example={
+                        "detail": ["Authentication token is missing.", "Medical Center not found!", "User is not found!"]
+                    }
+                )
+            ),
+        }
+    )
+    # create new insurance contract record
     def post(self, request):
+        # check if token and user is valid
         token = request.COOKIES.get("jwt")
         payload = isTokenValid(token=token)
         user, medcent = getMedicalCenterByID(payload=payload)
-
+        # serialize the request data
         serializer = MedicalCenterHealthInstitutionsUpdateSerializer(medcent, data = request.data)
+        # if valid then save
         if serializer.is_valid():
                 serializer.save()
         else:
-            return Response(serializer.errors, status=400)
+            return Response(
+                serializer.errors, 
+                status=status.HTTP_400_BAD_REQUEST)
 
-        response = Response(
+        return Response(
             {
                 "message": "New health insurance contraction is successfully added.",
             },
             status=status.HTTP_200_OK
         )
-        return response
     
+    @swagger_auto_schema(
+        operation_description="Delete requested contracted health insurance record.",
+        request_body = openapi.Schema(
+            type=openapi.TYPE_OBJECT,
+            properties={
+                "ids": openapi.Schema(
+                    type=openapi.TYPE_ARRAY,
+                    items=openapi.Schema(type=openapi.TYPE_INTEGER),
+                    description="List of health insurance IDs."
+                ),
+            },
+            required=["ids"]
+        ),
+        responses={
+            200: openapi.Response(
+                description="Contracted health insurance records successfully deleted.",
+                schema=openapi.Schema(
+                    type=openapi.TYPE_OBJECT,
+                    properties={
+                        'message': openapi.Schema(type=openapi.TYPE_STRING, description='Success message')
+                    },
+                    example={
+                        "message": "{deletion_count} contracted health insurance successfully deleted."
+                    }
+                )
+            ),
+            400: openapi.Response(
+                description="Bad Request",
+                schema=openapi.Schema(
+                    type=openapi.TYPE_OBJECT,
+                    properties={
+                        'detail': openapi.Schema(type=openapi.TYPE_STRING, description='Error details')
+                    },
+                    example={
+                        "detail": "No IDs provided for deletion!"
+                    }
+                )
+            ),
+            401: openapi.Response(
+                description="Authentication Failed!",
+                schema=openapi.Schema(
+                    type=openapi.TYPE_OBJECT,
+                    properties={
+                        'detail': openapi.Schema(type=openapi.TYPE_STRING, description='Error details')
+                    },
+                    example={
+                        "detail": "Invalid or expired token!"
+                    }
+                )
+            ),
+            404: openapi.Response(
+                description="Not Found!",
+                schema=openapi.Schema(
+                    type=openapi.TYPE_OBJECT,
+                    properties={
+                        'detail': openapi.Schema(type=openapi.TYPE_STRING, description='Error details')
+                    },
+                    example={
+                        "detail": ["Authentication token is missing.", "Medical Center not found!", "User is not found!", "No matching records found."]
+                    }
+                )
+            ),
+        }
+    )
+    # delete requested multiple health insurance records at once
+    def delete(self, request):
+        # check if token or user is valid
+        token = request.COOKIES.get("jwt")
+        payload = isTokenValid(token=token)
+        user, medcent = getMedicalCenterByID(payload=payload)
+
+        # get requested health insurance ids for deletion
+        insurance_ids = request.data.get("ids", [])
+        # check if any ids are requested for deletion
+        if not insurance_ids:
+            return Response(
+                {"detail": "No IDs provided for deletion!"},
+                status=status.HTTP_400_BAD_REQUEST
+            )
+        
+        # filter all requested doctors for deletion
+        insurances = medcent.contracted_health_institutions.filter(id__in=insurance_ids)
+        if not insurances.exists():
+            return Response(
+                {"detail": "No matching records found."},
+                status=status.HTTP_404_NOT_FOUND,
+            )
+        # delete them
+        count, _ = insurances.delete()
+        return Response(
+            {"message": f"{count} contracted health insurance are successfully deleted."},
+            status=status.HTTP_200_OK
+        )
+
+
+class MedicalCenterHealthInsuranceView(APIView):
+    @swagger_auto_schema(
+        operation_description="Delete requested contracted health insurance record.",
+        request_body = openapi.Schema(
+            type=openapi.TYPE_OBJECT,
+            properties={
+                "ids": openapi.Schema(
+                    type=openapi.TYPE_ARRAY,
+                    items=openapi.Schema(type=openapi.TYPE_INTEGER),
+                    description="List of health insurance IDs."
+                ),
+            },
+            required=["ids"]
+        ),
+        responses={
+            200: openapi.Response(
+                description="Contracted health insurance records successfully deleted.",
+                schema=openapi.Schema(
+                    type=openapi.TYPE_OBJECT,
+                    properties={
+                        'message': openapi.Schema(type=openapi.TYPE_STRING, description='Success message')
+                    },
+                    example={
+                        "message": "{deletion_count} contracted health insurance successfully deleted."
+                    }
+                )
+            ),
+            400: openapi.Response(
+                description="Bad Request",
+                schema=openapi.Schema(
+                    type=openapi.TYPE_OBJECT,
+                    properties={
+                        'detail': openapi.Schema(type=openapi.TYPE_STRING, description='Error details')
+                    },
+                    example={
+                        "detail": "No IDs provided for deletion!"
+                    }
+                )
+            ),
+            401: openapi.Response(
+                description="Authentication Failed!",
+                schema=openapi.Schema(
+                    type=openapi.TYPE_OBJECT,
+                    properties={
+                        'detail': openapi.Schema(type=openapi.TYPE_STRING, description='Error details')
+                    },
+                    example={
+                        "detail": "Invalid or expired token!"
+                    }
+                )
+            ),
+            404: openapi.Response(
+                description="Not Found!",
+                schema=openapi.Schema(
+                    type=openapi.TYPE_OBJECT,
+                    properties={
+                        'detail': openapi.Schema(type=openapi.TYPE_STRING, description='Error details')
+                    },
+                    example={
+                        "detail": ["Authentication token is missing.", "Medical Center not found!", "User is not found!", "No matching records found."]
+                    }
+                )
+            ),
+        }
+    )
+    # delete requested multiple health insurance records at once
     def delete(self, request, pk=None):
         token = request.COOKIES.get("jwt")
         payload = isTokenValid(token=token)
@@ -1341,6 +1627,8 @@ class MedicalCenterHealthInsurancesView(APIView):
             {"message": f"{len(insurance_ids)} insurances are successfully deleted."},
             status=status.HTTP_200_OK
         )
+
+
 
 
 class MedicalCenterVideosView(APIView):
@@ -1561,9 +1849,3 @@ class FilteredMedicalCenterRequestsView(APIView):
                 {"error": "Please provide at least one filter."},
                 status=status.HTTP_400_BAD_REQUEST,
             )
-
-
-        
-
-
-    
