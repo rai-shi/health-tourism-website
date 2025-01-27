@@ -173,6 +173,18 @@ class PatientView(APIView):
                     }
                 )
             ),
+            400: openapi.Response(
+                description="Bad Request",
+                schema=openapi.Schema(
+                    type=openapi.TYPE_OBJECT,
+                    properties={
+                        'detail': openapi.Schema(type=openapi.TYPE_STRING, description='Error details')
+                    },
+                    example={
+                        "detail": "Serializer data is invalid."
+                    }
+                )
+            ),
             401: openapi.Response(
                 description="Authentication failed.",
                 schema=openapi.Schema(
@@ -227,15 +239,18 @@ class PatientView(APIView):
         # serialize the data and if its valid then save
         serializer = PatientSerializers(patient, data=data, partial=True)
         if serializer.is_valid():
-            serializer.save()
+            serializer.save()           
 
-        response = Response(
-            {
-                "message": "Personal information is successfully updated.",
-            },
-            status=status.HTTP_200_OK
-        )
-        return response
+            return Response(
+                {
+                    "message": "Personal information is successfully updated.",
+                },
+                status=status.HTTP_200_OK
+            )
+        
+        return Response(
+            serializer.errors, 
+            status=status.HTTP_400_BAD_REQUEST)
   
 
 # GET, POST

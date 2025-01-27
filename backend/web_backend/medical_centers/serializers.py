@@ -6,10 +6,16 @@ from django.shortcuts import get_object_or_404
 
 class DoctorSerializer(serializers.ModelSerializer):
     related_center = serializers.PrimaryKeyRelatedField(queryset=MedicalCenter.objects.all())
-
+    # major = serializers.SerializerMethodField()
+    # minor = serializers.SerializerMethodField()
     class Meta:
         model = Doctor
         fields = '__all__' 
+    
+    def get_major(self, obj):
+        return obj.major.name
+    def get_minor(self, obj):
+        return obj.minor.name
 
 
 class MedicalCenterPhotosSerializer(serializers.ModelSerializer):

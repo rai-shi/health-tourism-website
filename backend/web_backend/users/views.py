@@ -162,7 +162,7 @@ class RegisterView(APIView):
                 schema=openapi.Schema(
                     type=openapi.TYPE_OBJECT,
                     properties={
-                        'detail': openapi.Schema(type=openapi.TYPE_STRING, description='Error details')
+                        'detail': openapi.Schema(type=openapi.TYPE_STRING, description='Error details, registeration serializer errors')
                     },
                     example={
                         "detail": "Registration failed: {error details}"

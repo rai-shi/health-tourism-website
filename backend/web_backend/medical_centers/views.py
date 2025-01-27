@@ -571,32 +571,316 @@ class MedicalCenterView(APIView):
 
 class MedicalCenterDoctorsView(APIView):
 
+    @swagger_auto_schema(
+        operation_description="Create doctor records for authenticated medical center.",
+        request_body = openapi.Schema(
+            type=openapi.TYPE_OBJECT,
+            properties={
+                "name": openapi.Schema(
+                    type=openapi.TYPE_STRING,
+                    description="Doctor Name"
+                ),
+                "surname": openapi.Schema(
+                    type=openapi.TYPE_STRING,
+                    description="Doctor Surname"
+                ),
+                "title": openapi.Schema(
+                    type=openapi.TYPE_STRING,
+                    description="Doctor Academic Title ('Dr.', 'Prof. Dr.', 'Assoc. Dr.', 'Asst. Dr.')"
+                ),
+                "major": openapi.Schema(
+                    type=openapi.TYPE_STRING,
+                    description="Doctor Major Branch"
+                ),
+                "minor": openapi.Schema(
+                    type=openapi.TYPE_STRING,
+                    description="Doctor Minor Branch"
+                )
+            },
+            required=["name", "surname", "title", "major"]
+        ),
+        responses={
+            201: openapi.Response(
+                description="Doctor records successfully created.",
+                schema=openapi.Schema(
+                    type=openapi.TYPE_OBJECT,
+                    properties={
+                        'message': openapi.Schema(type=openapi.TYPE_STRING, description='Success message')
+                    },
+                    example={
+                        "message": "Doctors are successfully created."
+                    }
+                )
+            ),
+            400: openapi.Response(
+                description="Bad Request",
+                schema=openapi.Schema(
+                    type=openapi.TYPE_OBJECT,
+                    properties={
+                        'detail': openapi.Schema(type=openapi.TYPE_STRING, description='Error details')
+                    },
+                    example={
+                        "detail": ["Serializer data is invalid.","Please provide at least one doctor info"]
+                    }
+                )
+            ),
+            401: openapi.Response(
+                description="Authentication Failed!",
+                schema=openapi.Schema(
+                    type=openapi.TYPE_OBJECT,
+                    properties={
+                        'detail': openapi.Schema(type=openapi.TYPE_STRING, description='Error details')
+                    },
+                    example={
+                        "detail": "Invalid or expired token!"
+                    }
+                )
+            ),
+            404: openapi.Response(
+                description="Not Found!",
+                schema=openapi.Schema(
+                    type=openapi.TYPE_OBJECT,
+                    properties={
+                        'detail': openapi.Schema(type=openapi.TYPE_STRING, description='Error details')
+                    },
+                    example={
+                        "detail": ["Authentication token is missing.", "Medical Center not found!", "User is not found!"]
+                    }
+                )
+            ),
+        }
+    )
     # record of one doctor or many doctor
     def post(self, request):
+        # check if jwt token is valid 
         token = request.COOKIES.get("jwt")
         payload = isTokenValid(token=token)
 
+        # get User and MedicalCenter
         user, med_cent = getMedicalCenterByID(payload=payload)
-        doctors = request.data.get("doctors", [])
-        # {"doctors": [{}, {}]}
+
+        # get request doctors data
+        doctors = request.data.get("doctors", [])   
+        # {"doctors": [{'name', 'surname', 'title', 'major', 'minor'},]} 
+        # minor is optional
+
+        if not doctors:
+             return Response(
+                    {"detail":"Please provide at least one doctor info"}, 
+                    status=status.HTTP_400_BAD_REQUEST)
+
         for doctor in doctors:
             # Set the related_center field using the retrieved medical center object
             doctor['related_center'] = med_cent.id
-
+            # serialize the data
             doctor_serializer = DoctorSerializer(data=doctor)
             if doctor_serializer.is_valid():
                 doctor_serializer.save()
             else:
-                return Response(doctor_serializer.errors, status=400)
+                return Response(
+                    doctor_serializer.errors, 
+                    status=status.HTTP_400_BAD_REQUEST)
 
         response = Response(
             {
                 "message": "Doctors are successfully created.",
             },
-            status=status.HTTP_200_OK
+            status=status.HTTP_201_CREATED
         )
         return response
-            
+
+    @swagger_auto_schema(
+        operation_description="Retrieve authenticated medical center's doctors information list.",
+        responses={
+            200: openapi.Response(
+                description="Successful response with medical center's doctors information list.",
+                schema=openapi.Schema(
+                    type=openapi.TYPE_ARRAY,
+                    items=openapi.Schema(
+                        type=openapi.TYPE_OBJECT,
+                        properties={
+                            'id'                : openapi.Schema(
+                                type=openapi.TYPE_INTEGER,
+                                description="Doctor ID"),
+                            'related_center'    : openapi.Schema(
+                                type=openapi.TYPE_INTEGER,
+                                description="Medical Center ID which doctor works"),
+                            'name'              : openapi.Schema(
+                                type=openapi.TYPE_STRING,
+                                description="Doctor Name"),
+                            'surname'           : openapi.Schema(
+                                type=openapi.TYPE_STRING,
+                                description="Doctor Surname"),
+                            'title'             : openapi.Schema(
+                                type=openapi.TYPE_STRING,
+                                description="Doctor Academic Title"),
+                            'major'             : openapi.Schema(
+                                type=openapi.TYPE_STRING,
+                                description="Doctor Major Branch"),
+                            'minor'             : openapi.Schema(
+                                type=openapi.TYPE_STRING,
+                                description="Doctor Minor Branch if he/she has"),
+                        },
+                        examples = [
+                            {
+                                "id": 2,
+                                "related_center": 1,
+                                "name": "John",
+                                "surname": "Doe",
+                                "title": "Prof. Dr.",
+                                "major": "Aest",
+                                "minor": "Anes"
+                            }
+                        ]
+                    )
+                )
+            ),
+            401: openapi.Response(
+                description="Authentication Failed!",
+                schema=openapi.Schema(
+                    type=openapi.TYPE_OBJECT,
+                    properties={
+                        'detail': openapi.Schema(type=openapi.TYPE_STRING, description='Error details')
+                    },
+                    example={
+                        "detail": "Invalid or expired token!"
+                    }
+                )
+            ),
+            404: openapi.Response(
+                description="Not Found!",
+                schema=openapi.Schema(
+                    type=openapi.TYPE_OBJECT,
+                    properties={
+                        'detail': openapi.Schema(type=openapi.TYPE_STRING, description='Error details')
+                    },
+                    example={
+                        "detail": ["Authentication token is missing.", "Medical Center not found!", "User is not found!", "Doctor not found!"]
+                    }
+                )
+            ),
+        }
+    )
+    # get doctors list       
+    def get(self, request):
+        # check if token is valid
+        token = request.COOKIES.get("jwt")
+        payload = isTokenValid(token=token)
+        # get User and MedicalCenter 
+        user, medcent = getMedicalCenterByID(payload=payload)
+
+        # get medical center's doctor
+        try:
+            doctors = Doctor.objects.filter( related_center = medcent.id )
+        except Doctor.DoesNotExist:
+            return Response(
+                {"detail": "Doctor not found!"},
+                status=status.HTTP_404_NOT_FOUND
+            )
+        # serialize the data
+        serializer = DoctorSerializer(doctors, many=True)
+        return Response( 
+            serializer.data, 
+            status=status.HTTP_200_OK )
+
+    @swagger_auto_schema(
+        operation_description="Delete requested doctors.",
+        request_body = openapi.Schema(
+            type=openapi.TYPE_OBJECT,
+            properties={
+                "ids": openapi.Schema(
+                    type=openapi.TYPE_ARRAY,
+                    items=openapi.Schema(type=openapi.TYPE_INTEGER),
+                    description="List of doctor IDs."
+                ),
+            },
+            required=["ids"]
+        ),
+        responses={
+            200: openapi.Response(
+                description="Doctor records successfully deleted.",
+                schema=openapi.Schema(
+                    type=openapi.TYPE_OBJECT,
+                    properties={
+                        'message': openapi.Schema(type=openapi.TYPE_STRING, description='Success message')
+                    },
+                    example={
+                        "message": "{deletion_count} doctors successfully deleted."
+                    }
+                )
+            ),
+            400: openapi.Response(
+                description="Bad Request",
+                schema=openapi.Schema(
+                    type=openapi.TYPE_OBJECT,
+                    properties={
+                        'detail': openapi.Schema(type=openapi.TYPE_STRING, description='Error details')
+                    },
+                    example={
+                        "detail": "No IDs provided for deletion!"
+                    }
+                )
+            ),
+            401: openapi.Response(
+                description="Authentication Failed!",
+                schema=openapi.Schema(
+                    type=openapi.TYPE_OBJECT,
+                    properties={
+                        'detail': openapi.Schema(type=openapi.TYPE_STRING, description='Error details')
+                    },
+                    example={
+                        "detail": "Invalid or expired token!"
+                    }
+                )
+            ),
+            404: openapi.Response(
+                description="Not Found!",
+                schema=openapi.Schema(
+                    type=openapi.TYPE_OBJECT,
+                    properties={
+                        'detail': openapi.Schema(type=openapi.TYPE_STRING, description='Error details')
+                    },
+                    example={
+                        "detail": ["Authentication token is missing.", "Medical Center not found!", "User is not found!", "No matching records found."]
+                    }
+                )
+            ),
+        }
+    )
+    # delete multiple doctor at once
+    def delete(self, request):
+        # check if token is valid
+        token = request.COOKIES.get("jwt")
+        payload = isTokenValid(token=token)
+
+        # get User and MedicalCenter, no need return object but we need to sure if the user is medical center 
+        getMedicalCenterByID(payload=payload)
+
+        # check if any ids are requested for deletion
+        doctor_ids = request.data.get("ids", [])
+        if not doctor_ids:
+            return Response(
+                {"detail": "No IDs provided for deletion!"},
+                status=status.HTTP_400_BAD_REQUEST
+            )
+
+        # filter all requested doctors for deletion
+        doctor_ids = Destination.objects.filter(id__in=doctor_ids)
+        if not doctor_ids.exists():
+            return Response(
+                {"detail": "No matching records found."},
+                status=status.HTTP_404_NOT_FOUND,
+            )
+        # delete them
+        count, _ = doctor_ids.delete() 
+        return Response(
+            {"message": f"{count} doctors successfully deleted."},
+            status=status.HTTP_200_OK,
+        )
+
+
+class MedicalCenterDoctorView(APIView):
+
     def get(self, request, pk=None):
         token = request.COOKIES.get("jwt")
         payload = isTokenValid(token=token)
@@ -618,42 +902,7 @@ class MedicalCenterDoctorsView(APIView):
         doctors = Doctor.objects.filter( related_center = medcent.id )
         serializer = DoctorSerializer(doctors, many=True)
         return Response( serializer.data, status=status.HTTP_200_OK )
-
-    def delete(self, request, pk=None):
-        token = request.COOKIES.get("jwt")
-        isTokenValid(token=token)
-
-        if pk is not None:
-            try:
-                instance = Doctor.objects.get(id=pk)
-            except Doctor.DoesNotExist:
-                return Response(
-                    {"message": "Doctor not found!"},
-                    status=status.HTTP_404_NOT_FOUND
-                )
-
-            name_surname = f"{instance.title} {instance.name} {instance.surname}"
-            instance.delete()
-            return Response(
-                {"message": f"{name_surname} is successfully deleted."},
-                status=status.HTTP_200_OK
-            )
-
-        doctor_ids = request.data.get("ids", [])
-        if not doctor_ids:
-            return Response(
-                {"message": "No IDs provided for deletion!"},
-                status=status.HTTP_400_BAD_REQUEST
-            )
-
-        deleted_count, _ = Doctor.objects.filter(id__in=doctor_ids).delete()
-        return Response(
-            {"message": f"{deleted_count} doctors successfully deleted."},
-            status=status.HTTP_200_OK
-        )
-
-
-class MedicalCenterDoctorView(APIView):
+    
     def patch(self, request, pk):
         token = request.COOKIES.get("jwt")
         payload = isTokenValid(token=token)
@@ -674,28 +923,6 @@ class MedicalCenterDoctorView(APIView):
                 return Response(serializer.data, status=status.HTTP_200_OK)
             
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
-
-    def get(self, request, pk=None):
-        token = request.COOKIES.get("jwt")
-        payload = isTokenValid(token=token)
-        user, medcent = getMedicalCenterByID(payload=payload)
-
-        # if spesific doctor is requested
-        if pk is not None:
-            try:
-                instance = Doctor.objects.get(id=pk)
-            except Doctor.DoesNotExist:
-                return Response(
-                    {"message": "Doctor not found!"},
-                    status=status.HTTP_404_NOT_FOUND
-                )
-            serializer = DoctorSerializer(instance)
-            return Response( serializer.data, status=status.HTTP_200_OK )
-        
-        # if doctors list requested
-        doctors = Doctor.objects.filter( related_center = medcent.id )
-        serializer = DoctorSerializer(doctors, many=True)
-        return Response( serializer.data, status=status.HTTP_200_OK )
 
     def delete(self, request, pk=None):
         token = request.COOKIES.get("jwt")

@@ -6,7 +6,9 @@ class UserSerializers(serializers.ModelSerializer):
     """
     User Serializer
 
-    Can be used for creating, updating and serializing the retrieved data
+    Can be used for creating, updating and serializing the retrieved data.
+    
+    Password updating, and validation function is provided.
 
     data: 
         first_name, 

@@ -1,9 +1,8 @@
 from django.db import models
 from django.contrib.auth.models import AbstractUser, BaseUserManager
 
-
+# since we create new User Model extended with AbstractUser, we need to override the createsuperuser command
 class UserManager(BaseUserManager):
-    # since we create new User Model extended with AbstractUser, we need to override the createsuperuser command
     def create_user(self, email, password=None, **extra_fields):
         if not email:
             raise ValueError("The Email field must be set")

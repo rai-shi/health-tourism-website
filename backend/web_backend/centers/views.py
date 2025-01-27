@@ -285,8 +285,20 @@ class MedicalCentersByIDView(APIView):
                         }
                 )
             ),
+            400: openapi.Response(
+                description="Bad Request!",
+                schema=openapi.Schema(
+                    type=openapi.TYPE_OBJECT,
+                    properties={
+                        'detail': openapi.Schema(type=openapi.TYPE_STRING, description='Error details')
+                    },
+                    example={
+                        "detail": "Please provide a medical center ID."
+                    }
+                )
+            ),
             404: openapi.Response(
-                description="Medical Center not found",
+                description="Not Found!",
                 schema=openapi.Schema(
                     type=openapi.TYPE_OBJECT,
                     properties={
@@ -294,7 +306,6 @@ class MedicalCentersByIDView(APIView):
                     },
                     example={
                         "detail": "Medical center is not found!",
-                        "detail": "Please provide a medical center ID."
                     }
                 )
             )
@@ -320,7 +331,7 @@ class MedicalCentersByIDView(APIView):
         else:
             return Response(
                     {"detail": "Please provide a medical center ID."},
-                    status = status.HTTP_404_NOT_FOUND
+                    status = status.HTTP_400_BAD_REQUEST
                 )
     
     @swagger_auto_schema(
@@ -346,20 +357,19 @@ class MedicalCentersByIDView(APIView):
                         'detail': openapi.Schema(type=openapi.TYPE_STRING, description='Error details')
                     },
                     example={
-                        "detail": "Invalid or expired token.",
-                        "detail": "Need to be patient profile!"
+                        "detail": ["Invalid or expired token.","Need to be patient profile!"]
                     }
                 )
             ),
             404: openapi.Response(
-                description="Authentication failed.",
+                description="Not Found!",
                 schema=openapi.Schema(
                     type=openapi.TYPE_OBJECT,
                     properties={
                         'detail': openapi.Schema(type=openapi.TYPE_STRING, description='Error details')
                     },
                     example={
-                        "detail": "Patient not found!"
+                        "detail": ["Patient not found!", "Authentication token is missing."]
                     }
                 )
             )

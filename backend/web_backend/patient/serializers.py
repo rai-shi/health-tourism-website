@@ -4,7 +4,7 @@ from .models import MedicalCenterRequest, MedicalCenterRequestFile
 
 class PatientSerializers(serializers.ModelSerializer):
     """
-    PatientSerializers can be used for validation creating and serializing data.
+    PatientSerializers can be used for validation, creating, and serializing data.
 
     data:
         "gender", 
@@ -50,6 +50,8 @@ class MedicalCenterRequestSerializer(serializers.ModelSerializer):
     Medical Center Request Serializer
 
     Can be used for only creating MedicalCenterRequest. Do not user for viewing.
+
+    Send ID to the required fields. (patient, medical_center, speciality, procedure, country, city)
 
     data: 
         'id', 'patient', 'medical_center', 'speciality', 'procedure',
