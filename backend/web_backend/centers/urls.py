@@ -10,7 +10,7 @@ urlpatterns = [
     path('<int:id>/', MedicalCentersByIDView.as_view(), name="med-center"),  
 
     # GET
-    path('<int:speciality_id>/<int:procedure_id>/', SpecialityBasedFilteredMedicalCentersView.as_view(), name="filtered-medcenters"),  
+    path('<int:speciality_id>/<int:procedure_id>/', SpecialityBasedFilteredMedicalCentersView.as_view(), name="procedure-based-filtered-medcenters"),  
     
     # GET
     path('filter/', FilteredMedicalCentersView.as_view(), name="filtered-medcenters"),  
